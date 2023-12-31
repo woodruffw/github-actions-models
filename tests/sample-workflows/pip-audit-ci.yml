@@ -1,0 +1,33 @@
+# https://github.com/pypa/pip-audit/blob/1fd67af0653a8e66b9470adab2e408a435632f19/.github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "0 12 * * *"
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        python:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: test
+        run: make test PIP_AUDIT_EXTRA=test
