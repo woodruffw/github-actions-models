@@ -105,15 +105,27 @@ pub enum SoV<T> {
     Many(Vec<T>),
 }
 
-impl<T> From<Vec<T>> for SoV<T> {
-    fn from(value: Vec<T>) -> Self {
-        Self::Many(value)
+impl<T> SoV<T> {
+    pub fn one(v: T) -> Self {
+        SoV::One(v)
+    }
+
+    pub fn many(vs: Vec<T>) -> Self {
+        SoV::Many(vs)
     }
 }
 
-impl<T> From<T> for SoV<T> {
-    fn from(value: T) -> Self {
-        Self::One(value)
+impl<'a, T> IntoIterator for &'a SoV<T> {
+    type Item = &'a T;
+    type IntoIter = std::slice::Iter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        let slice = match self {
+            SoV::One(v) => std::slice::from_ref(v),
+            SoV::Many(vs) => vs.as_slice(),
+        };
+
+        slice.iter()
     }
 }
 
@@ -121,7 +133,7 @@ impl<T> From<T> for SoV<T> {
 mod tests {
     use crate::common::{BasePermission, ExplicitPermissions};
 
-    use super::Permissions;
+    use super::{Permissions, SoV};
 
     #[test]
     fn test_permissions() {
@@ -135,5 +147,18 @@ mod tests {
             serde_yaml::from_str::<ExplicitPermissions>(perm),
             Ok(_)
         ));
+    }
+
+    #[test]
+    fn test_sov_intoiterator() {
+        let sov_one = SoV::one("test".to_string());
+        assert_eq!(sov_one.into_iter().collect::<Vec<_>>(), vec!["test"]);
+
+        let sov_many = SoV::many(vec!["test-1".to_string(), "test-2".to_string()]);
+        assert!(matches!(sov_many, SoV::Many(_)));
+        assert_eq!(
+            sov_many.into_iter().collect::<Vec<_>>(),
+            vec!["test-1", "test-2"]
+        );
     }
 }

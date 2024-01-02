@@ -1,9 +1,12 @@
 use std::{env, path::Path};
 
-use glomar_models::workflow::{
-    event::OptionalBody,
-    job::{RunsOn, StepBody},
-    Job, Trigger, Workflow,
+use glomar_models::{
+    common::SoV,
+    workflow::{
+        event::OptionalBody,
+        job::{RunsOn, StepBody},
+        Job, Trigger, Workflow,
+    },
 };
 
 fn load_workflow(name: &str) -> Workflow {
@@ -41,7 +44,7 @@ fn test_pip_audit_ci() {
     assert_eq!(test_job.name, None);
     assert_eq!(
         test_job.runs_on,
-        RunsOn::Target(String::from("ubuntu-latest").into())
+        RunsOn::Target(SoV::one("ubuntu-latest".to_string()))
     );
     assert_eq!(test_job.steps.len(), 3);
 

@@ -7,6 +7,8 @@ use crate::common::{BoE, Env, LoE, Permissions, SoV};
 
 use super::{Concurrency, Defaults};
 
+/// A "normal" GitHub Actions workflow job, i.e. a job composed of one
+/// or more steps on a runner.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct NormalJob {
