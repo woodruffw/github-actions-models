@@ -135,10 +135,29 @@ pub struct ReusableWorkflowCallJob {
     pub secrets: Option<Secrets>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum Secrets {
     Inherit,
     #[serde(untagged)]
     Env(#[serde(default)] Env),
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{common::EnvValue, workflow::job::Secrets};
+
+    #[test]
+    fn test_secrets() {
+        assert_eq!(
+            serde_yaml::from_str::<Secrets>("inherit").unwrap(),
+            Secrets::Inherit
+        );
+
+        let secrets = "foo-secret: bar";
+        let Secrets::Env(secrets) = serde_yaml::from_str::<Secrets>(secrets).unwrap() else {
+            panic!("unexpected secrets variant");
+        };
+        assert_eq!(secrets["foo-secret"], EnvValue::String("bar".into()));
+    }
 }

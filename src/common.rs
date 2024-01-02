@@ -7,7 +7,7 @@ pub type Env = HashMap<String, EnvValue>;
 /// Environment variable values are always strings, but GitHub Actions
 /// allows users to configure them as various native YAML types before
 /// internal stringification.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum EnvValue {
     String(String),

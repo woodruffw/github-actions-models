@@ -79,34 +79,21 @@ pub enum BasePermission {
     WriteAll,
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
-#[serde(rename_all = "kebab-case")]
+#[derive(Deserialize, Default, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case", default)]
 pub struct ExplicitPermissions {
-    #[serde(default)]
     pub actions: Permission,
-    #[serde(default)]
     pub checks: Permission,
-    #[serde(default)]
     pub contents: Permission,
-    #[serde(default)]
     pub deployments: Permission,
-    #[serde(default)]
     pub id_token: Permission,
-    #[serde(default)]
     pub issues: Permission,
-    #[serde(default)]
     pub discussions: Permission,
-    #[serde(default)]
     pub packages: Permission,
-    #[serde(default)]
     pub pages: Permission,
-    #[serde(default)]
     pub pull_requests: Permission,
-    #[serde(default)]
     pub repository_projects: Permission,
-    #[serde(default)]
     pub security_events: Permission,
-    #[serde(default)]
     pub statuses: Permission,
 }
 
@@ -154,7 +141,7 @@ mod tests {
     use super::Permissions;
 
     #[test]
-    fn permissions_deserializes() {
+    fn test_permissions() {
         assert_eq!(
             serde_yaml::from_str::<Permissions>("read-all").unwrap(),
             Permissions::Base(crate::workflow::BasePermission::ReadAll)
