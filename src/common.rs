@@ -2,6 +2,56 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
+#[derive(Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case", untagged)]
+pub enum Permissions {
+    Base(BasePermission),
+    Explicit(ExplicitPermissions),
+}
+
+impl Default for Permissions {
+    fn default() -> Self {
+        Self::Base(BasePermission::Default)
+    }
+}
+
+#[derive(Deserialize, Default, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum BasePermission {
+    /// Whatever default permissions come from the workflow's `GITHUB_TOKEN`.
+    #[default]
+    Default,
+    ReadAll,
+    WriteAll,
+}
+
+#[derive(Deserialize, Default, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case", default)]
+pub struct ExplicitPermissions {
+    pub actions: Permission,
+    pub checks: Permission,
+    pub contents: Permission,
+    pub deployments: Permission,
+    pub id_token: Permission,
+    pub issues: Permission,
+    pub discussions: Permission,
+    pub packages: Permission,
+    pub pages: Permission,
+    pub pull_requests: Permission,
+    pub repository_projects: Permission,
+    pub security_events: Permission,
+    pub statuses: Permission,
+}
+
+#[derive(Deserialize, Default, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum Permission {
+    Read,
+    Write,
+    #[default]
+    None,
+}
+
 pub type Env = HashMap<String, EnvValue>;
 
 /// Environment variable values are always strings, but GitHub Actions
@@ -64,5 +114,26 @@ impl<T> From<Vec<T>> for SoV<T> {
 impl<T> From<T> for SoV<T> {
     fn from(value: T) -> Self {
         Self::One(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::common::{BasePermission, ExplicitPermissions};
+
+    use super::Permissions;
+
+    #[test]
+    fn test_permissions() {
+        assert_eq!(
+            serde_yaml::from_str::<Permissions>("read-all").unwrap(),
+            Permissions::Base(BasePermission::ReadAll)
+        );
+
+        let perm = "security-events: write";
+        assert!(matches!(
+            serde_yaml::from_str::<ExplicitPermissions>(perm),
+            Ok(_)
+        ));
     }
 }

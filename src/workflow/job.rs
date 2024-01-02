@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use serde::Deserialize;
 use serde_yaml::Value;
 
-use crate::common::{BoE, Env, LoE, SoV};
+use crate::common::{BoE, Env, LoE, Permissions, SoV};
 
-use super::{Concurrency, Defaults, Permissions};
+use super::{Concurrency, Defaults};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -67,15 +67,15 @@ pub struct Step {
 pub enum StepBody {
     Uses {
         uses: String,
+        #[serde(default)]
+        with: Env,
+    },
+    Run {
+        run: String,
         working_directory: Option<String>,
         shell: Option<String>,
         #[serde(default)]
         env: Env,
-    },
-    Run {
-        run: String,
-        #[serde(default)]
-        with: Env,
     },
 }
 

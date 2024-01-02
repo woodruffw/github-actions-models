@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-use crate::common::{BoE, Env};
+use crate::common::{BoE, Env, Permissions};
 
 pub mod event;
 pub mod job;
@@ -56,56 +56,6 @@ pub enum Trigger {
     Events(event::Events),
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
-#[serde(rename_all = "kebab-case", untagged)]
-pub enum Permissions {
-    Base(BasePermission),
-    Explicit(ExplicitPermissions),
-}
-
-impl Default for Permissions {
-    fn default() -> Self {
-        Self::Base(BasePermission::Default)
-    }
-}
-
-#[derive(Deserialize, Default, Debug, PartialEq)]
-#[serde(rename_all = "kebab-case")]
-pub enum BasePermission {
-    /// Whatever default permissions come from the workflow's `GITHUB_TOKEN`.
-    #[default]
-    Default,
-    ReadAll,
-    WriteAll,
-}
-
-#[derive(Deserialize, Default, Debug, PartialEq)]
-#[serde(rename_all = "kebab-case", default)]
-pub struct ExplicitPermissions {
-    pub actions: Permission,
-    pub checks: Permission,
-    pub contents: Permission,
-    pub deployments: Permission,
-    pub id_token: Permission,
-    pub issues: Permission,
-    pub discussions: Permission,
-    pub packages: Permission,
-    pub pages: Permission,
-    pub pull_requests: Permission,
-    pub repository_projects: Permission,
-    pub security_events: Permission,
-    pub statuses: Permission,
-}
-
-#[derive(Deserialize, Default, Debug, PartialEq)]
-#[serde(rename_all = "kebab-case")]
-pub enum Permission {
-    Read,
-    Write,
-    #[default]
-    None,
-}
-
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Defaults {
@@ -132,25 +82,4 @@ pub struct Concurrency {
 pub enum Job {
     NormalJob(job::NormalJob),
     ReusableWorkflowCallJob(job::ReusableWorkflowCallJob),
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::workflow::ExplicitPermissions;
-
-    use super::Permissions;
-
-    #[test]
-    fn test_permissions() {
-        assert_eq!(
-            serde_yaml::from_str::<Permissions>("read-all").unwrap(),
-            Permissions::Base(crate::workflow::BasePermission::ReadAll)
-        );
-
-        let perm = "security-events: write";
-        assert!(matches!(
-            serde_yaml::from_str::<ExplicitPermissions>(perm),
-            Ok(_)
-        ));
-    }
 }
