@@ -1,3 +1,12 @@
+//! Data models for GitHub Actions workflow definitions.
+//!
+//! Resources:
+//! * [Workflow syntax for GitHub Actions]
+//! * [JSON Schema definition for workflows]
+//!
+//! [Workflow Syntax for GitHub Actions]: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions>
+//! [JSON Schema definition for workflows]: https://json.schemastore.org/github-workflow.json
+
 use std::collections::HashMap;
 
 use serde::Deserialize;
@@ -8,8 +17,6 @@ pub mod event;
 pub mod job;
 
 /// A single GitHub Actions workflow.
-///
-/// See: <https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions>
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Workflow {

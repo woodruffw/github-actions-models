@@ -1,7 +1,10 @@
+//! Shared models and utilities.
+
 use std::collections::HashMap;
 
 use serde::Deserialize;
 
+/// `permissions` for a workflow, job, or step.
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum Permissions {
@@ -15,16 +18,23 @@ impl Default for Permissions {
     }
 }
 
+/// "Base" permissions, where all individual permissions are configured
+/// with a blanket setting.
 #[derive(Deserialize, Default, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum BasePermission {
     /// Whatever default permissions come from the workflow's `GITHUB_TOKEN`.
     #[default]
     Default,
+    /// "Read" access to all resources.
     ReadAll,
+    /// "Write" access to all resources (implies read).
     WriteAll,
 }
 
+/// An "explicit" mapping of individual permissions.
+///
+/// Permissions that are not explicitly specified default to [`Permission::None`].
 #[derive(Deserialize, Default, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case", default)]
 pub struct ExplicitPermissions {
@@ -43,15 +53,22 @@ pub struct ExplicitPermissions {
     pub statuses: Permission,
 }
 
+/// A singular permission setting.
 #[derive(Deserialize, Default, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum Permission {
+    /// Read access.
     Read,
+
+    /// Write access.
     Write,
+
+    /// No access.
     #[default]
     None,
 }
 
+/// An environment mapping.
 pub type Env = HashMap<String, EnvValue>;
 
 /// Environment variable values are always strings, but GitHub Actions
@@ -94,6 +111,7 @@ where
     }
 }
 
+/// A `bool` literal or an actions expression.
 pub type BoE = LoE<bool>;
 
 /// A "scalar or vector" type, for places in GitHub Actions where a
