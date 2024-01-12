@@ -1,3 +1,5 @@
+//! Workflow jobs.
+
 use std::collections::HashMap;
 
 use serde::Deserialize;

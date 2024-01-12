@@ -1,7 +1,17 @@
+//! Workflow events.
+
 use std::collections::HashMap;
 
 use serde::Deserialize;
 
+/// "Bare" workflow event triggers.
+///
+/// These appear when a workflow is triggered with an event with no context,
+/// e.g.:
+///
+/// ```yaml
+/// on: push
+/// ```
 #[derive(Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum BareEvent {
@@ -43,6 +53,9 @@ pub enum BareEvent {
     WorkflowRun,
 }
 
+/// Workflow event triggers, with bodies.
+///
+/// Like [`BareEvent`], but with per-event properties.
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "snake_case")]
 pub struct Events {
@@ -123,6 +136,7 @@ impl<T> Default for OptionalBody<T> {
     }
 }
 
+/// A generic event trigger body.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct GenericEvent {
@@ -130,6 +144,7 @@ pub struct GenericEvent {
     pub types: Vec<String>,
 }
 
+/// The body of a `pull_request` event trigger.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct PullRequest {
@@ -143,6 +158,7 @@ pub struct PullRequest {
     pub path_filters: Option<PathFilters>,
 }
 
+/// The body of a `push` event trigger.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Push {
@@ -156,12 +172,14 @@ pub struct Push {
     pub tag_filters: Option<TagFilters>,
 }
 
+/// The body of a `cron` event trigger.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Cron {
     pub cron: String,
 }
 
+/// The body of a `workflow_call` event trigger.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCall {
@@ -170,6 +188,7 @@ pub struct WorkflowCall {
     pub secrets: HashMap<String, WorkflowCallSecret>,
 }
 
+/// A single input in a `workflow_call` event trigger body.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCallInput {
@@ -180,6 +199,7 @@ pub struct WorkflowCallInput {
     pub r#type: String,
 }
 
+/// A single output in a `workflow_call` event trigger body.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCallOutput {
@@ -187,6 +207,7 @@ pub struct WorkflowCallOutput {
     pub value: String,
 }
 
+/// A single secret in a `workflow_call` event trigger body.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCallSecret {
@@ -194,6 +215,7 @@ pub struct WorkflowCallSecret {
     pub required: bool,
 }
 
+/// The body of a `workflow_dispatch` event trigger.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowDispatch {
@@ -201,6 +223,7 @@ pub struct WorkflowDispatch {
     pub inputs: HashMap<String, WorkflowDispatchInput>, // TODO: WorkflowDispatchInput
 }
 
+/// A single input in a `workflow_dispatch` event trigger body.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowDispatchInput {
@@ -214,6 +237,7 @@ pub struct WorkflowDispatchInput {
     pub options: Vec<String>,
 }
 
+/// The body of a `workflow_run` event trigger.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowRun {
@@ -224,6 +248,7 @@ pub struct WorkflowRun {
     pub branch_filters: Option<BranchFilters>,
 }
 
+/// Branch filtering variants for event trigger bodies.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum BranchFilters {
@@ -231,6 +256,7 @@ pub enum BranchFilters {
     BranchesIgnore(Vec<String>),
 }
 
+/// Tag filtering variants for event trigger bodies.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum TagFilters {
@@ -238,6 +264,7 @@ pub enum TagFilters {
     TagsIgnore(Vec<String>),
 }
 
+/// Path filtering variants for event trigger bodies.
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum PathFilters {
