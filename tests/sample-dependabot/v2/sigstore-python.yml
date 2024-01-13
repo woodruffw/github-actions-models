@@ -1,0 +1,30 @@
+# https://github.com/sigstore/sigstore-python/blob/e0168a781b87d059fde05dfdfe0ce82e564ce095/.github/dependabot.yml
+version: 2
+
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: daily
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 99
+    rebase-strategy: "disabled"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: .github/actions/upload-coverage/
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 99
+    rebase-strategy: "disabled"
+    groups:
+      actions:
+        patterns:
+          - "*"

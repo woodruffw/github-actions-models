@@ -1,16 +1,17 @@
 //! "v2" Dependabot models.
+//!
+//! Resources:
+//! * [Configuration options for the `dependabot.yml` file](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file)
+//! * [JSON Schema for Dependabot v2](https://json.schemastore.org/dependabot-2.0.json)
 
-use std::{
-    collections::{HashMap, HashSet},
-    default,
-};
+use std::collections::{HashMap, HashSet};
 
 use serde::Deserialize;
 
 use crate::common::SoV;
 
 /// A `dependabot.yml` configuration file.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Dependabot {
     /// Invariant: `2`
@@ -23,7 +24,7 @@ pub struct Dependabot {
 }
 
 /// Different registries known to Dependabot.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case", tag = "type")]
 pub enum Registry {
     ComposerRepository {
@@ -91,7 +92,7 @@ pub enum Registry {
 }
 
 /// A single `update` directive.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Update {
     #[serde(default)]
@@ -125,6 +126,11 @@ pub struct Update {
     pub registries: Option<SoV<String>>,
     #[serde(default)]
     pub reviewers: HashSet<String>,
+    pub schedule: Schedule,
+    pub target_branch: Option<String>,
+    #[serde(default)]
+    pub vendor: bool,
+    pub versioning_strategy: Option<VersioningStrategy>,
 }
 
 #[inline]
@@ -138,14 +144,16 @@ fn default_open_pull_requests_limit() -> u64 {
     5
 }
 
-#[derive(Deserialize)]
+/// Allow rules for Dependabot updates.
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Allow {
     pub dependency_name: Option<String>,
     pub dependency_type: Option<DependencyType>,
 }
 
-#[derive(Deserialize)]
+/// Dependency types in `allow` rules.
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub enum DependencyType {
     Direct,
@@ -155,7 +163,8 @@ pub enum DependencyType {
     Development,
 }
 
-#[derive(Deserialize)]
+/// Commit message settings for Dependabot updates.
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct CommitMessage {
     pub prefix: Option<String>,
@@ -164,7 +173,8 @@ pub struct CommitMessage {
     pub include: Option<String>,
 }
 
-#[derive(Deserialize)]
+/// Group settings for batched updates.
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Group {
     /// This can only be [`DependencyType::Development`] or
@@ -174,10 +184,12 @@ pub struct Group {
     pub patterns: HashSet<String>,
     #[serde(default)]
     pub exclude_patterns: HashSet<String>,
+    #[serde(default)]
     pub update_types: HashSet<UpdateType>,
 }
 
-#[derive(Deserialize, Hash, Eq, PartialEq)]
+/// Update types for grouping.
+#[derive(Deserialize, Debug, Hash, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum UpdateType {
     Major,
@@ -185,7 +197,8 @@ pub enum UpdateType {
     Patch,
 }
 
-#[derive(Deserialize)]
+/// Dependency ignore settings for updates.
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Ignore {
     pub dependency_name: Option<String>,
@@ -197,7 +210,8 @@ pub struct Ignore {
     pub versions: HashSet<String>,
 }
 
-#[derive(Deserialize, Default)]
+/// An "allow"/"deny" toggle.
+#[derive(Deserialize, Debug, Default)]
 #[serde(rename_all = "kebab-case")]
 pub enum AllowDeny {
     Allow,
@@ -205,7 +219,8 @@ pub enum AllowDeny {
     Deny,
 }
 
-#[derive(Deserialize)]
+/// Supported packaging ecosystems.
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum PackageEcosystem {
     Bundler,
@@ -214,7 +229,7 @@ pub enum PackageEcosystem {
     Docker,
     Elm,
     Gitsubmodule,
-    GitHubActions,
+    GithubActions,
     Gomod,
     Gradle,
     Maven,
@@ -227,10 +242,54 @@ pub enum PackageEcosystem {
     Terraform,
 }
 
-#[derive(Deserialize, Default)]
+/// Rebase strategies for Dependabot updates.
+#[derive(Deserialize, Debug, Default, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum RebaseStrategy {
     #[default]
     Auto,
     Disabled,
+}
+
+/// Scheduling settings for Dependabot updates.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "kebab-case")]
+pub struct Schedule {
+    pub interval: Interval,
+    pub day: Option<Day>,
+    pub time: Option<String>,
+    pub timezone: Option<String>,
+}
+
+/// Schedule intervals.
+#[derive(Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum Interval {
+    Daily,
+    Weekly,
+    Monthly,
+}
+
+/// Days of the week.
+#[derive(Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum Day {
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday,
+}
+
+/// Versioning strategies.
+#[derive(Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum VersioningStrategy {
+    Auto,
+    Increase,
+    IncreaseIfNecessary,
+    LockfileOnly,
+    Widen,
 }
