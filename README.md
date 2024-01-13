@@ -1,7 +1,9 @@
 glomar-models
 =============
 
-"Low level" data models for GitHub Actions workflows, actions, and related components.
+[![CI](https://github.com/woodruffw/glomar-models/actions/workflows/ci.yml/badge.svg)](https://github.com/woodruffw/glomar-models/actions/workflows/ci.yml)
+
+High-quality data models for GitHub Actions workflows, actions, and related components.
 
 ## Why?
 
