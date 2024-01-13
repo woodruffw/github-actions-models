@@ -103,8 +103,10 @@ pub struct Events {
 /// between the non-presence of an event (no trigger) and the presence
 /// of an empty event body (e.g. `pull_request:`), which means "trigger
 /// with the defaults for this event type."
+#[derive(Default)]
 pub enum OptionalBody<T> {
     Default,
+    #[default]
     Missing,
     Body(T),
 }
@@ -127,12 +129,6 @@ impl<T> From<Option<T>> for OptionalBody<T> {
             Some(v) => OptionalBody::Body(v),
             None => OptionalBody::Default,
         }
-    }
-}
-
-impl<T> Default for OptionalBody<T> {
-    fn default() -> Self {
-        OptionalBody::Missing
     }
 }
 

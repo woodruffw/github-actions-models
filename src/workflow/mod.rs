@@ -60,7 +60,7 @@ pub struct Workflow {
 pub enum Trigger {
     BareEvent(event::BareEvent),
     BareEvents(Vec<event::BareEvent>),
-    Events(event::Events),
+    Events(Box<event::Events>),
 }
 
 #[derive(Deserialize)]
@@ -87,6 +87,6 @@ pub struct Concurrency {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum Job {
-    NormalJob(job::NormalJob),
-    ReusableWorkflowCallJob(job::ReusableWorkflowCallJob),
+    NormalJob(Box<job::NormalJob>),
+    ReusableWorkflowCallJob(Box<job::ReusableWorkflowCallJob>),
 }
