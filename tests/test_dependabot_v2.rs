@@ -1,6 +1,8 @@
 use std::{collections::HashSet, path::Path};
 
-use glomar_models::dependabot::v2::{Dependabot, Interval, PackageEcosystem, RebaseStrategy};
+use github_actions_models::dependabot::v2::{
+    Dependabot, Interval, PackageEcosystem, RebaseStrategy,
+};
 
 fn load_dependabot(name: &str) -> Dependabot {
     let workflow_path = Path::new(env!("CARGO_MANIFEST_DIR"))

@@ -1,6 +1,6 @@
 use std::{env, path::Path};
 
-use glomar_models::action::{Action, Runs};
+use github_actions_models::action::{Action, Runs};
 
 fn load_action(name: &str) -> Action {
     let action_path = Path::new(env!("CARGO_MANIFEST_DIR"))

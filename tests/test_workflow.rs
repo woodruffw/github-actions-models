@@ -1,6 +1,6 @@
 use std::{env, path::Path};
 
-use glomar_models::{
+use github_actions_models::{
     common::SoV,
     workflow::{
         event::OptionalBody,

@@ -1,9 +1,9 @@
-glomar-models
-=============
+github-actions-models
+=====================
 
-[![CI](https://github.com/woodruffw/glomar-models/actions/workflows/ci.yml/badge.svg)](https://github.com/woodruffw/glomar-models/actions/workflows/ci.yml)
+[![CI](https://github.com/woodruffw/github-actions-models/actions/workflows/ci.yml/badge.svg)](https://github.com/woodruffw/github-actions-models/actions/workflows/ci.yml)
 
-High-quality data models for GitHub Actions workflows, actions, and related components.
+Unofficial, high-quality data models for GitHub Actions workflows, actions, and related components.
 
 ## Why?
 
