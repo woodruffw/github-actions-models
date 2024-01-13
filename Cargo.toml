@@ -1,6 +1,6 @@
 [package]
 name = "github-actions-models"
-description = "High-quality data models for GitHub Actions workflows, actions, and related components"
+description = "Unofficial, high-quality data models for GitHub Actions workflows, actions, and related components"
 version = "0.1.2"
 edition = "2021"
 license = "MIT"
