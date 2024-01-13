@@ -1,0 +1,17 @@
+on:
+  release:
+    types:
+      - published
+
+name: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: publish to crates.io
+        run: |
+          echo ${{ secrets.CRATES_IO_TOKEN }} | cargo login
+          cargo publish
