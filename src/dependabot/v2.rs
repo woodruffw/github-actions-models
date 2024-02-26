@@ -8,8 +8,6 @@ use std::collections::{HashMap, HashSet};
 
 use serde::Deserialize;
 
-use crate::common::SoV;
-
 /// A `dependabot.yml` configuration file.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
@@ -123,7 +121,8 @@ pub struct Update {
     // TODO: pull-request-branch-name
     #[serde(default)]
     pub rebase_strategy: RebaseStrategy,
-    pub registries: Option<SoV<String>>,
+    #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
+    pub registries: Vec<String>,
     #[serde(default)]
     pub reviewers: HashSet<String>,
     pub schedule: Schedule,

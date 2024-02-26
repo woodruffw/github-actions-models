@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use serde::Deserialize;
 use serde_yaml::Value;
 
-use crate::common::{BoE, Env, LoE, Permissions, SoV};
+use crate::common::{BoE, Env, LoE, Permissions};
 
 use super::{Concurrency, Defaults};
 
@@ -17,8 +17,8 @@ pub struct NormalJob {
     pub name: Option<String>,
     #[serde(default)]
     pub permissions: Permissions,
-    #[serde(default)]
-    pub needs: SoV<String>,
+    #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
+    pub needs: Vec<String>,
     pub r#if: Option<String>,
     pub runs_on: RunsOn,
     pub environment: Option<DeploymentEnvironment>,
@@ -41,9 +41,15 @@ pub struct NormalJob {
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum RunsOn {
-    Target(SoV<String>),
-    Group { group: String },
-    Label { label: SoV<String> },
+    #[serde(deserialize_with = "crate::common::scalar_or_vector")]
+    Target(Vec<String>),
+    Group {
+        group: String,
+    },
+    #[serde(deserialize_with = "crate::common::scalar_or_vector")]
+    Label {
+        label: Vec<String>,
+    },
 }
 
 #[derive(Deserialize)]
@@ -130,8 +136,8 @@ pub struct ReusableWorkflowCallJob {
     pub name: Option<String>,
     #[serde(default)]
     pub permissions: Permissions,
-    #[serde(default)]
-    pub needs: SoV<String>,
+    #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
+    pub needs: Vec<String>,
     pub r#if: Option<String>,
     pub uses: String,
     #[serde(default)]
