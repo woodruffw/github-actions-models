@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 
 /// `permissions` for a workflow, job, or step.
 #[derive(Deserialize, Debug, PartialEq)]
@@ -116,48 +116,37 @@ pub type BoE = LoE<bool>;
 
 /// A "scalar or vector" type, for places in GitHub Actions where a
 /// key can have either a scalar value or an array of values.
+///
+/// This only appears internally, as an intermediate type for `scalar_or_vector`.
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
-pub enum SoV<T> {
+pub(crate) enum SoV<T> {
     One(T),
     Many(Vec<T>),
 }
 
-impl<T> Default for SoV<T> {
-    fn default() -> Self {
-        SoV::Many(Default::default())
+impl<T> From<SoV<T>> for Vec<T> {
+    fn from(val: SoV<T>) -> Vec<T> {
+        match val {
+            SoV::One(v) => vec![v],
+            SoV::Many(vs) => vs,
+        }
     }
 }
 
-impl<T> SoV<T> {
-    pub fn one(v: T) -> Self {
-        SoV::One(v)
-    }
-
-    pub fn many(vs: Vec<T>) -> Self {
-        SoV::Many(vs)
-    }
-}
-
-impl<'a, T> IntoIterator for &'a SoV<T> {
-    type Item = &'a T;
-    type IntoIter = std::slice::Iter<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        let slice = match self {
-            SoV::One(v) => std::slice::from_ref(v),
-            SoV::Many(vs) => vs.as_slice(),
-        };
-
-        slice.iter()
-    }
+pub(crate) fn scalar_or_vector<'de, D, T>(de: D) -> Result<Vec<T>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    SoV::deserialize(de).map(Into::into)
 }
 
 #[cfg(test)]
 mod tests {
     use crate::common::{BasePermission, ExplicitPermissions};
 
-    use super::{Permissions, SoV};
+    use super::Permissions;
 
     #[test]
     fn test_permissions() {
@@ -167,22 +156,6 @@ mod tests {
         );
 
         let perm = "security-events: write";
-        assert!(matches!(
-            serde_yaml::from_str::<ExplicitPermissions>(perm),
-            Ok(_)
-        ));
-    }
-
-    #[test]
-    fn test_sov_intoiterator() {
-        let sov_one = SoV::one("test".to_string());
-        assert_eq!(sov_one.into_iter().collect::<Vec<_>>(), vec!["test"]);
-
-        let sov_many = SoV::many(vec!["test-1".to_string(), "test-2".to_string()]);
-        assert!(matches!(sov_many, SoV::Many(_)));
-        assert_eq!(
-            sov_many.into_iter().collect::<Vec<_>>(),
-            vec!["test-1", "test-2"]
-        );
+        assert!(serde_yaml::from_str::<ExplicitPermissions>(perm).is_ok());
     }
 }

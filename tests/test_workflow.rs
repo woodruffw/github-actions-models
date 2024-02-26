@@ -1,12 +1,9 @@
 use std::{env, path::Path};
 
-use github_actions_models::{
-    common::SoV,
-    workflow::{
-        event::OptionalBody,
-        job::{RunsOn, StepBody},
-        Job, Trigger, Workflow,
-    },
+use github_actions_models::workflow::{
+    event::OptionalBody,
+    job::{RunsOn, StepBody},
+    Job, Trigger, Workflow,
 };
 
 fn load_workflow(name: &str) -> Workflow {
@@ -44,7 +41,7 @@ fn test_pip_audit_ci() {
     assert_eq!(test_job.name, None);
     assert_eq!(
         test_job.runs_on,
-        RunsOn::Target(SoV::one("ubuntu-latest".to_string()))
+        RunsOn::Target(vec!["ubuntu-latest".to_string()])
     );
     assert_eq!(test_job.steps.len(), 3);
 
