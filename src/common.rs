@@ -125,11 +125,11 @@ pub(crate) enum SoV<T> {
     Many(Vec<T>),
 }
 
-impl<T> Into<Vec<T>> for SoV<T> {
-    fn into(self) -> Vec<T> {
-        match self {
-            Self::One(v) => vec![v],
-            Self::Many(vs) => vs,
+impl<T> From<SoV<T>> for Vec<T> {
+    fn from(val: SoV<T>) -> Vec<T> {
+        match val {
+            SoV::One(v) => vec![v],
+            SoV::Many(vs) => vs,
         }
     }
 }
