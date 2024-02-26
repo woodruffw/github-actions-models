@@ -156,9 +156,6 @@ mod tests {
         );
 
         let perm = "security-events: write";
-        assert!(matches!(
-            serde_yaml::from_str::<ExplicitPermissions>(perm),
-            Ok(_)
-        ));
+        assert!(serde_yaml::from_str::<ExplicitPermissions>(perm).is_ok());
     }
 }
