@@ -123,6 +123,12 @@ pub enum SoV<T> {
     Many(Vec<T>),
 }
 
+impl<T> Default for SoV<T> {
+    fn default() -> Self {
+        SoV::Many(Default::default())
+    }
+}
+
 impl<T> SoV<T> {
     pub fn one(v: T) -> Self {
         SoV::One(v)
