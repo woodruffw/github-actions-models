@@ -18,7 +18,7 @@ pub struct NormalJob {
     #[serde(default)]
     pub permissions: Permissions,
     #[serde(default)]
-    pub needs: Vec<String>,
+    pub needs: SoV<String>,
     pub r#if: Option<String>,
     pub runs_on: RunsOn,
     pub environment: Option<DeploymentEnvironment>,
@@ -86,7 +86,7 @@ pub enum StepBody {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Strategy {
-    pub matrix: Matrix,
+    pub matrix: LoE<Matrix>,
     pub fail_fast: Option<BoE>,
     pub max_parallel: Option<u64>,
 }
@@ -131,7 +131,7 @@ pub struct ReusableWorkflowCallJob {
     #[serde(default)]
     pub permissions: Permissions,
     #[serde(default)]
-    pub needs: Vec<String>,
+    pub needs: SoV<String>,
     pub r#if: Option<String>,
     pub uses: String,
     #[serde(default)]
