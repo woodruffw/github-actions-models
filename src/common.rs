@@ -1,6 +1,6 @@
 //! Shared models and utilities.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 
 use serde::{Deserialize, Deserializer};
 
@@ -83,12 +83,12 @@ pub enum EnvValue {
     Boolean(bool),
 }
 
-impl ToString for EnvValue {
-    fn to_string(&self) -> String {
+impl Display for EnvValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::String(s) => s.clone(),
-            Self::Number(n) => n.to_string(),
-            Self::Boolean(b) => b.to_string(),
+            Self::String(s) => write!(f, "{s}"),
+            Self::Number(n) => write!(f, "{n}"),
+            Self::Boolean(b) => write!(f, "{b}"),
         }
     }
 }
