@@ -39,6 +39,7 @@ pub enum BasePermission {
 #[serde(rename_all = "kebab-case", default)]
 pub struct ExplicitPermissions {
     pub actions: Permission,
+    pub attestations: Permission,
     pub checks: Permission,
     pub contents: Permission,
     pub deployments: Permission,
