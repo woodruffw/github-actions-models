@@ -2,7 +2,7 @@
 
 use std::{collections::HashMap, fmt::Display};
 
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize};
 
 /// `permissions` for a workflow, job, or step.
 #[derive(Deserialize, Debug, PartialEq)]
@@ -75,7 +75,7 @@ pub type Env = HashMap<String, EnvValue>;
 /// Environment variable values are always strings, but GitHub Actions
 /// allows users to configure them as various native YAML types before
 /// internal stringification.
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum EnvValue {
     String(String),
@@ -96,7 +96,7 @@ impl Display for EnvValue {
 /// A "literal or expr" type, for places in GitHub Actions where a
 /// key can either have a literal value (array, object, etc.) or an
 /// expression string.
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum LoE<T> {
     Literal(T),

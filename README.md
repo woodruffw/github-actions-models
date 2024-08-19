@@ -13,3 +13,11 @@ I need these for another tool, and generating them automatically from
 reasons.
 
 [their JSON Schemas]: https://www.schemastore.org/json/
+
+## License
+
+MIT License.
+
+The integration tests for this crate contain sample workflows collected from
+various GitHub repositories; these contain comments linking them to their
+original repositories and are licensed under the terms there.

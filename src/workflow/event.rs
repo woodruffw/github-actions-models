@@ -227,7 +227,8 @@ pub struct WorkflowDispatchInput {
     // TODO: model `default`?
     #[serde(default)]
     pub required: bool,
-    pub r#type: String,
+    // TODO: Model as boolean, choice, number, environment, string; default is string.
+    pub r#type: Option<String>,
     // Only present when `type` is `choice`.
     #[serde(default)]
     pub options: Vec<String>,

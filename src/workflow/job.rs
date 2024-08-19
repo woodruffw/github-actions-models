@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
 use crate::common::{BoE, Env, LoE, Permissions};
@@ -59,7 +59,7 @@ pub enum DeploymentEnvironment {
     NameURL { name: String, url: Option<String> },
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Step {
     pub id: Option<String>,
@@ -72,7 +72,7 @@ pub struct Step {
     pub body: StepBody,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum StepBody {
     Uses {
