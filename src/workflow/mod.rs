@@ -90,3 +90,14 @@ pub enum Job {
     NormalJob(Box<job::NormalJob>),
     ReusableWorkflowCallJob(Box<job::ReusableWorkflowCallJob>),
 }
+
+impl Job {
+    /// Returns the optional `name` field common to both reusable and normal
+    /// job definitions.
+    pub fn name(&self) -> Option<&str> {
+        match self {
+            Self::NormalJob(job) => job.name.as_deref(),
+            Self::ReusableWorkflowCallJob(job) => job.name.as_deref(),
+        }
+    }
+}
