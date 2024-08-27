@@ -131,8 +131,7 @@ impl Expression {
     /// the underlying expression is `${{ expr }}`.
     pub fn as_raw(&self) -> &str {
         if self.is_curly() {
-            self
-                .trimmed()
+            self.trimmed()
                 .strip_prefix("${{")
                 .unwrap()
                 .strip_suffix("}}")
