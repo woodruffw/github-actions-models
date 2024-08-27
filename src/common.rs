@@ -121,7 +121,7 @@ impl Expression {
     /// Returns the "curly" form of this expression, i.e. `${{ expr }}`.
     pub fn as_curly(&self) -> Cow<'_, str> {
         if self.is_curly() {
-            Cow::Borrowed(&self.trimmed())
+            Cow::Borrowed(self.trimmed())
         } else {
             Cow::Owned(format!("${{{{ {expr} }}}}", expr = self.trimmed()))
         }
@@ -131,7 +131,7 @@ impl Expression {
     /// the underlying expression is `${{ expr }}`.
     pub fn as_raw(&self) -> &str {
         if self.is_curly() {
-            &self
+            self
                 .trimmed()
                 .strip_prefix("${{")
                 .unwrap()
@@ -139,7 +139,7 @@ impl Expression {
                 .unwrap()
                 .trim()
         } else {
-            &self.trimmed()
+            self.trimmed()
         }
     }
 }
