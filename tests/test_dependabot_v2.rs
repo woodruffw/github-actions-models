@@ -16,7 +16,7 @@ fn load_dependabot(name: &str) -> Dependabot {
 fn test_load_all() {
     let sample_configs = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/sample-dependabot/v2");
 
-    for sample_config in std::fs::read_dir(&sample_configs).unwrap() {
+    for sample_config in std::fs::read_dir(sample_configs).unwrap() {
         let sample_workflow = sample_config.unwrap().path();
         let contents = std::fs::read_to_string(sample_workflow).unwrap();
         serde_yaml::from_str::<Dependabot>(&contents).unwrap();

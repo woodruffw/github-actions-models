@@ -14,7 +14,7 @@ fn load_action(name: &str) -> Action {
 fn test_load_all() {
     let sample_actions = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/sample-actions");
 
-    for sample_action in std::fs::read_dir(&sample_actions).unwrap() {
+    for sample_action in std::fs::read_dir(sample_actions).unwrap() {
         let sample_action = sample_action.unwrap().path();
         let action_contents = std::fs::read_to_string(sample_action).unwrap();
         serde_yaml::from_str::<Action>(&action_contents).unwrap();
