@@ -101,3 +101,40 @@ impl Job {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::workflow::event::{OptionalBody, WorkflowCall, WorkflowDispatch};
+
+    use super::Trigger;
+
+    #[test]
+    fn test_workflow_triggers() {
+        let on = "
+  issues:
+  workflow_dispatch:
+    inputs:
+      foo:
+        type: string
+  workflow_call:
+    inputs:
+      bar:
+        type: string
+        ";
+
+        let trigger: Trigger = serde_yaml::from_str(on).unwrap();
+        let Trigger::Events(events) = trigger else {
+            panic!("wrong trigger type");
+        };
+
+        assert!(matches!(events.issues, OptionalBody::Default));
+        assert!(matches!(
+            events.workflow_dispatch,
+            OptionalBody::Body(WorkflowDispatch { .. })
+        ));
+        assert!(matches!(
+            events.workflow_call,
+            OptionalBody::Body(WorkflowCall { .. })
+        ));
+    }
+}

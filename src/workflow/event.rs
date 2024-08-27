@@ -179,8 +179,11 @@ pub struct Cron {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCall {
+    #[serde(default)]
     pub inputs: HashMap<String, WorkflowCallInput>,
+    #[serde(default)]
     pub outputs: HashMap<String, WorkflowCallOutput>,
+    #[serde(default)]
     pub secrets: HashMap<String, WorkflowCallSecret>,
 }
 
