@@ -1,6 +1,6 @@
 //! Shared models and utilities.
 
-use std::{collections::HashMap, fmt::Display};
+use std::{borrow::Cow, collections::HashMap, fmt::Display};
 
 use serde::{Deserialize, Deserializer, Serialize};
 
@@ -93,6 +93,57 @@ impl Display for EnvValue {
     }
 }
 
+/// Represents a GitHub Actions expression.
+///
+/// This type performs no syntax checking on the underlying expression,
+/// meaning that it might be invalid. The underlying expression may also
+/// be "curly" or "raw" depending on its origin; use an appropriate
+/// method like [`Expression::as_curly`] to access a specific form.
+#[derive(Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct Expression(String);
+
+impl Expression {
+    /// Returns the underlying expression with any whitespace trimmed.
+    /// This is unlikely to be necessary in practice, but can happen
+    /// if a user encapsulates the expression in a YAML string with
+    /// additional whitespace.
+    fn trimmed(&self) -> &str {
+        self.0.trim()
+    }
+
+    /// Returns whether the underlying inner expression is "curly", i.e.
+    /// includes the `${{ ... }}` expression delimiters.
+    fn is_curly(&self) -> bool {
+        self.trimmed().starts_with("${{") && self.trimmed().ends_with("}}")
+    }
+
+    /// Returns the "curly" form of this expression, i.e. `${{ expr }}`.
+    pub fn as_curly(&self) -> Cow<'_, str> {
+        if self.is_curly() {
+            Cow::Borrowed(&self.trimmed())
+        } else {
+            Cow::Owned(format!("${{{{ {expr} }}}}", expr = self.trimmed()))
+        }
+    }
+
+    /// Returns the "raw" form of this expression, i.e. `expr` if
+    /// the underlying expression is `${{ expr }}`.
+    pub fn as_raw(&self) -> &str {
+        if self.is_curly() {
+            &self
+                .trimmed()
+                .strip_prefix("${{")
+                .unwrap()
+                .strip_suffix("}}")
+                .unwrap()
+                .trim()
+        } else {
+            &self.trimmed()
+        }
+    }
+}
+
 /// A "literal or expr" type, for places in GitHub Actions where a
 /// key can either have a literal value (array, object, etc.) or an
 /// expression string.
@@ -100,7 +151,7 @@ impl Display for EnvValue {
 #[serde(untagged)]
 pub enum LoE<T> {
     Literal(T),
-    Expr(String),
+    Expr(Expression),
 }
 
 impl<T> Default for LoE<T>
@@ -147,7 +198,7 @@ where
 mod tests {
     use crate::common::{BasePermission, ExplicitPermissions};
 
-    use super::Permissions;
+    use super::{Expression, Permissions};
 
     #[test]
     fn test_permissions() {
@@ -158,5 +209,25 @@ mod tests {
 
         let perm = "security-events: write";
         assert!(serde_yaml::from_str::<ExplicitPermissions>(perm).is_ok());
+    }
+
+    #[test]
+    fn test_expression() {
+        let expr = Expression("${{ foo }}".to_string());
+        assert_eq!(expr.as_curly(), "${{ foo }}");
+        assert_eq!(expr.as_raw(), "foo");
+
+        let expr = Expression("foo".to_string());
+        assert_eq!(expr.as_curly(), "${{ foo }}");
+        assert_eq!(expr.as_raw(), "foo");
+
+        let expr = Expression(" \t ${{ foo  }} \t\n".to_string());
+        // NOTE: whitespace within the curly is preserved. Worth changing?
+        assert_eq!(expr.as_curly(), "${{ foo  }}");
+        assert_eq!(expr.as_raw(), "foo");
+
+        let expr = Expression("  foo \t\n".to_string());
+        assert_eq!(expr.as_curly(), "${{ foo }}");
+        assert_eq!(expr.as_raw(), "foo");
     }
 }
