@@ -97,7 +97,7 @@ impl Display for EnvValue {
 ///
 /// This type performs no syntax checking on the underlying expression,
 /// meaning that it might be invalid. The underlying expression may also
-/// be "curly" or "raw" depending on its origin; use an appropriate
+/// be "curly" or "bare" depending on its origin; use an appropriate
 /// method like [`Expression::as_curly`] to access a specific form.
 #[derive(Serialize, Deserialize)]
 #[serde(transparent)]
@@ -118,6 +118,28 @@ impl Expression {
         self.trimmed().starts_with("${{") && self.trimmed().ends_with("}}")
     }
 
+    /// Construct an `Expression` from the given value if and only if
+    /// the value is already a "curly" expression.
+    pub fn from_curly(value: String) -> Option<Self> {
+        let expr = Self(value);
+        if !expr.is_curly() {
+            return None;
+        }
+
+        Some(expr)
+    }
+
+    /// Construct an `Expression` from the given value if and only if
+    /// the value is already a "bare" expression.
+    pub fn from_bare(value: String) -> Option<Self> {
+        let expr = Self(value);
+        if expr.is_curly() {
+            return None;
+        }
+
+        Some(expr)
+    }
+
     /// Returns the "curly" form of this expression, i.e. `${{ expr }}`.
     pub fn as_curly(&self) -> Cow<'_, str> {
         if self.is_curly() {
@@ -127,9 +149,9 @@ impl Expression {
         }
     }
 
-    /// Returns the "raw" form of this expression, i.e. `expr` if
+    /// Returns the "bare" form of this expression, i.e. `expr` if
     /// the underlying expression is `${{ expr }}`.
-    pub fn as_raw(&self) -> &str {
+    pub fn as_bare(&self) -> &str {
         if self.is_curly() {
             self.trimmed()
                 .strip_prefix("${{")
@@ -214,19 +236,31 @@ mod tests {
     fn test_expression() {
         let expr = Expression("${{ foo }}".to_string());
         assert_eq!(expr.as_curly(), "${{ foo }}");
-        assert_eq!(expr.as_raw(), "foo");
+        assert_eq!(expr.as_bare(), "foo");
 
         let expr = Expression("foo".to_string());
         assert_eq!(expr.as_curly(), "${{ foo }}");
-        assert_eq!(expr.as_raw(), "foo");
+        assert_eq!(expr.as_bare(), "foo");
 
         let expr = Expression(" \t ${{ foo  }} \t\n".to_string());
         // NOTE: whitespace within the curly is preserved. Worth changing?
         assert_eq!(expr.as_curly(), "${{ foo  }}");
-        assert_eq!(expr.as_raw(), "foo");
+        assert_eq!(expr.as_bare(), "foo");
 
         let expr = Expression("  foo \t\n".to_string());
         assert_eq!(expr.as_curly(), "${{ foo }}");
-        assert_eq!(expr.as_raw(), "foo");
+        assert_eq!(expr.as_bare(), "foo");
+    }
+
+    #[test]
+    fn test_expression_from_curly() {
+        assert!(Expression::from_curly("${{ foo }}".into()).is_some());
+        assert!(Expression::from_curly("foo".into()).is_none());
+    }
+
+    #[test]
+    fn test_expression_from_bare() {
+        assert!(Expression::from_bare("${{ foo }}".into()).is_none());
+        assert!(Expression::from_bare("foo".into()).is_some());
     }
 }
