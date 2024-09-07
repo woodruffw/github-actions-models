@@ -8,8 +8,13 @@ use serde::{Deserialize, Deserializer, Serialize};
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum Permissions {
+    /// Base, i.e. blanket permissions.
     Base(BasePermission),
-    Explicit(ExplicitPermissions),
+    /// Fine-grained permissions.
+    ///
+    /// These are modeled with an open-ended mapping rather than a structure
+    /// to make iteration over all defined permissions easier.
+    Explicit(HashMap<String, Permission>),
 }
 
 impl Default for Permissions {
@@ -30,28 +35,6 @@ pub enum BasePermission {
     ReadAll,
     /// "Write" access to all resources (implies read).
     WriteAll,
-}
-
-/// An "explicit" mapping of individual permissions.
-///
-/// Permissions that are not explicitly specified default to [`Permission::None`].
-#[derive(Deserialize, Default, Debug, PartialEq)]
-#[serde(rename_all = "kebab-case", default)]
-pub struct ExplicitPermissions {
-    pub actions: Permission,
-    pub attestations: Permission,
-    pub checks: Permission,
-    pub contents: Permission,
-    pub deployments: Permission,
-    pub id_token: Permission,
-    pub issues: Permission,
-    pub discussions: Permission,
-    pub packages: Permission,
-    pub pages: Permission,
-    pub pull_requests: Permission,
-    pub repository_projects: Permission,
-    pub security_events: Permission,
-    pub statuses: Permission,
 }
 
 /// A singular permission setting.
@@ -217,7 +200,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::common::{BasePermission, ExplicitPermissions};
+    use std::collections::HashMap;
+
+    use crate::common::{BasePermission, Permission};
 
     use super::{Expression, Permissions};
 
@@ -229,7 +214,13 @@ mod tests {
         );
 
         let perm = "security-events: write";
-        assert!(serde_yaml::from_str::<ExplicitPermissions>(perm).is_ok());
+        assert_eq!(
+            serde_yaml::from_str::<Permissions>(perm).unwrap(),
+            Permissions::Explicit(HashMap::from([(
+                "security-events".into(),
+                Permission::Write
+            )]))
+        );
     }
 
     #[test]
