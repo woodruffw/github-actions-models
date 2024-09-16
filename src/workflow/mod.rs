@@ -120,6 +120,7 @@ mod tests {
     inputs:
       bar:
         type: string
+  pull_request_target:
         ";
 
         let trigger: Trigger = serde_yaml::from_str(on).unwrap();
@@ -136,5 +137,6 @@ mod tests {
             events.workflow_call,
             OptionalBody::Body(WorkflowCall { .. })
         ));
+        assert!(matches!(events.pull_request_target, OptionalBody::Default));
     }
 }
