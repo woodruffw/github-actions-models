@@ -105,7 +105,7 @@ pub struct Matrix {
     #[serde(default)]
     pub exclude: LoE<Vec<HashMap<String, Value>>>,
     #[serde(flatten)]
-    pub dimensions: LoE<HashMap<String, Vec<Value>>>,
+    pub dimensions: LoE<HashMap<String, LoE<Vec<Value>>>>,
 }
 
 #[derive(Deserialize)]
@@ -155,7 +155,12 @@ pub enum Secrets {
 
 #[cfg(test)]
 mod tests {
-    use crate::{common::EnvValue, workflow::job::Secrets};
+    use crate::{
+        common::{EnvValue, LoE},
+        workflow::job::{Matrix, Secrets},
+    };
+
+    use super::Strategy;
 
     #[test]
     fn test_secrets() {
@@ -169,5 +174,39 @@ mod tests {
             panic!("unexpected secrets variant");
         };
         assert_eq!(secrets["foo-secret"], EnvValue::String("bar".into()));
+    }
+
+    #[test]
+    fn test_strategy_matrix_expressions() {
+        let strategy = "matrix: ${{ 'foo' }}";
+        let Strategy {
+            matrix: LoE::Expr(expr),
+            ..
+        } = serde_yaml::from_str::<Strategy>(strategy).unwrap()
+        else {
+            panic!("unexpected matrix variant");
+        };
+
+        assert_eq!(expr.as_curly(), "${{ 'foo' }}");
+
+        let strategy = r#"
+matrix:
+  foo: ${{ 'foo' }}
+"#;
+
+        let Strategy {
+            matrix:
+                LoE::Literal(Matrix {
+                    include: _,
+                    exclude: _,
+                    dimensions: LoE::Literal(dims),
+                }),
+            ..
+        } = serde_yaml::from_str::<Strategy>(strategy).unwrap()
+        else {
+            panic!("unexpected matrix variant");
+        };
+
+        assert!(matches!(dims.get("foo"), Some(LoE::Expr(_))));
     }
 }
