@@ -77,11 +77,14 @@ pub struct RunDefaults {
 }
 
 #[derive(Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct Concurrency {
-    pub group: String,
-    #[serde(default)]
-    pub cancel_in_progress: BoE,
+#[serde(rename_all = "kebab-case", untagged)]
+pub enum Concurrency {
+    Bare(String),
+    Rich {
+        group: String,
+        #[serde(default)]
+        cancel_in_progress: BoE,
+    },
 }
 
 #[derive(Deserialize)]
@@ -106,7 +109,24 @@ impl Job {
 mod tests {
     use crate::workflow::event::{OptionalBody, WorkflowCall, WorkflowDispatch};
 
-    use super::Trigger;
+    use super::{Concurrency, Trigger};
+
+    #[test]
+    fn test_concurrency() {
+        let bare = "foo";
+        let concurrency: Concurrency = serde_yaml::from_str(bare).unwrap();
+        assert!(matches!(concurrency, Concurrency::Bare(_)));
+
+        let rich = "group: foo\ncancel-in-progress: true";
+        let concurrency: Concurrency = serde_yaml::from_str(rich).unwrap();
+        assert!(matches!(
+            concurrency,
+            Concurrency::Rich {
+                group: _,
+                cancel_in_progress: _
+            }
+        ));
+    }
 
     #[test]
     fn test_workflow_triggers() {
