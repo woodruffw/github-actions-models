@@ -29,7 +29,7 @@ pub struct NormalJob {
     pub env: Env,
     pub defaults: Option<Defaults>,
     pub steps: Vec<Step>,
-    pub timeout_minutes: Option<u64>,
+    pub timeout_minutes: Option<LoE<u64>>,
     pub strategy: Option<Strategy>,
     #[serde(default)]
     pub continue_on_error: BoE,
