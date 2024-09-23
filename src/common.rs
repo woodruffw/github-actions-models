@@ -176,7 +176,7 @@ pub type BoE = LoE<bool>;
 /// This only appears internally, as an intermediate type for `scalar_or_vector`.
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
-pub(crate) enum SoV<T> {
+enum SoV<T> {
     One(T),
     Many(Vec<T>),
 }
@@ -196,6 +196,32 @@ where
     T: Deserialize<'de>,
 {
     SoV::deserialize(de).map(Into::into)
+}
+
+/// A bool or string. This is useful for cases where GitHub Actions contextually
+/// reinterprets a YAML boolean as a string, e.g. `run: true` really means
+/// `run: 'true'`.
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
+enum BoS {
+    Bool(bool),
+    String(String),
+}
+
+impl From<BoS> for String {
+    fn from(value: BoS) -> Self {
+        match value {
+            BoS::Bool(b) => b.to_string(),
+            BoS::String(s) => s,
+        }
+    }
+}
+
+pub(crate) fn bool_is_string<'de, D>(de: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    BoS::deserialize(de).map(Into::into)
 }
 
 #[cfg(test)]

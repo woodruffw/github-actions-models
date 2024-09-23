@@ -81,6 +81,7 @@ pub enum StepBody {
         with: Env,
     },
     Run {
+        #[serde(deserialize_with = "crate::common::bool_is_string")]
         run: String,
         working_directory: Option<String>,
         shell: Option<String>,
