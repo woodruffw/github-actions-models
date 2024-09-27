@@ -45,10 +45,8 @@ pub enum RunsOn {
     Target(Vec<String>),
     Group {
         group: String,
-    },
-    #[serde(deserialize_with = "crate::common::scalar_or_vector")]
-    Label {
-        label: Vec<String>,
+        #[serde(deserialize_with = "crate::common::scalar_or_vector")]
+        labels: Vec<String>,
     },
 }
 
