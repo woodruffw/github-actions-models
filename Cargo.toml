@@ -1,5 +1,6 @@
 [package]
 name = "github-actions-models"
+authors = ["William Woodruff <william@yossarian.net>"]
 description = "Unofficial, high-quality data models for GitHub Actions workflows, actions, and related components"
 version = "0.6.4"
 edition = "2021"
