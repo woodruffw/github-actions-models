@@ -89,6 +89,9 @@ where
     }
 }
 
+/// A convenience alias for a `bool` literal or an actions expression.
+pub type BoE = LoE<bool>;
+
 #[cfg(test)]
 mod tests {
     use super::{ExplicitExpr, LoE};

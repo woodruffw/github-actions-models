@@ -5,8 +5,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
-use crate::common::expr::LoE;
-use crate::common::{BoE, Env, Permissions};
+use crate::common::expr::{BoE, LoE};
+use crate::common::{Env, Permissions};
 
 use super::{Concurrency, Defaults};
 

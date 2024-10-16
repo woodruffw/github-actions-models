@@ -11,7 +11,7 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-use crate::common::{BoE, Env, Permissions};
+use crate::common::{expr::BoE, Env, Permissions};
 
 pub mod event;
 pub mod job;

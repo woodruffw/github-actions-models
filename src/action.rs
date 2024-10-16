@@ -11,7 +11,7 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-use crate::common::{BoE, Env};
+use crate::common::{expr::BoE, Env};
 
 /// A GitHub Actions action definition.
 #[derive(Deserialize)]

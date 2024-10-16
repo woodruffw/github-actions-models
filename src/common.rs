@@ -78,9 +78,6 @@ impl Display for EnvValue {
     }
 }
 
-/// A `bool` literal or an actions expression.
-pub type BoE = expr::LoE<bool>;
-
 /// A "scalar or vector" type, for places in GitHub Actions where a
 /// key can have either a scalar value or an array of values.
 ///
