@@ -5,7 +5,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
-use crate::common::{BoE, Env, LoE, Permissions};
+use crate::common::expr::{BoE, LoE};
+use crate::common::{Env, Permissions};
 
 use super::{Concurrency, Defaults};
 
@@ -155,7 +156,7 @@ pub enum Secrets {
 #[cfg(test)]
 mod tests {
     use crate::{
-        common::{EnvValue, LoE},
+        common::{expr::LoE, EnvValue},
         workflow::job::{Matrix, Secrets},
     };
 
