@@ -4,6 +4,8 @@ use std::{borrow::Cow, collections::HashMap, fmt::Display};
 
 use serde::{Deserialize, Deserializer, Serialize};
 
+mod expr;
+
 /// `permissions` for a workflow, job, or step.
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case", untagged)]
