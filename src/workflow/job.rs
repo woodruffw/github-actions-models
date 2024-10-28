@@ -92,7 +92,7 @@ pub enum StepBody {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Strategy {
-    pub matrix: LoE<Matrix>,
+    pub matrix: Option<LoE<Matrix>>,
     pub fail_fast: Option<BoE>,
     pub max_parallel: Option<u64>,
 }
@@ -180,7 +180,7 @@ mod tests {
     fn test_strategy_matrix_expressions() {
         let strategy = "matrix: ${{ 'foo' }}";
         let Strategy {
-            matrix: LoE::Expr(expr),
+            matrix: Some(LoE::Expr(expr)),
             ..
         } = serde_yaml::from_str::<Strategy>(strategy).unwrap()
         else {
@@ -196,11 +196,11 @@ matrix:
 
         let Strategy {
             matrix:
-                LoE::Literal(Matrix {
+                Some(LoE::Literal(Matrix {
                     include: _,
                     exclude: _,
                     dimensions: LoE::Literal(dims),
-                }),
+                })),
             ..
         } = serde_yaml::from_str::<Strategy>(strategy).unwrap()
         else {
