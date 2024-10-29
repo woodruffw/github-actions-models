@@ -46,7 +46,10 @@ pub enum RunsOn {
     Target(Vec<String>),
     Group {
         group: String,
-        #[serde(deserialize_with = "crate::common::scalar_or_vector")]
+        // NOTE(ww): serde struggles with the null/empty case for custom
+        // deserializers, so we help it out by telling it that it can default
+        // to Vec::default.
+        #[serde(deserialize_with = "crate::common::scalar_or_vector", default)]
         labels: Vec<String>,
     },
 }
