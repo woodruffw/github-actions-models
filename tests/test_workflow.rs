@@ -55,9 +55,15 @@ fn test_pip_audit_ci() {
         panic!("expected uses step");
     };
     assert_eq!(uses, "actions/setup-python@v5");
-    assert_eq!(with["python-version"].to_string(), "${{ matrix.python }}");
-    assert_eq!(with["cache"].to_string(), "pip");
-    assert_eq!(with["cache-dependency-path"].to_string(), "pyproject.toml");
+    assert_eq!(
+        with["python-version"].as_ref().unwrap().to_string(),
+        "${{ matrix.python }}"
+    );
+    assert_eq!(with["cache"].as_ref().unwrap().to_string(), "pip");
+    assert_eq!(
+        with["cache-dependency-path"].as_ref().unwrap().to_string(),
+        "pyproject.toml"
+    );
 
     let StepBody::Run {
         run,
