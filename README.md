@@ -8,9 +8,11 @@ Unofficial, high-quality data models for GitHub Actions workflows, actions, and 
 
 ## Why?
 
-I need these for another tool, and generating them automatically from
+I need these for [another tool], and generating them automatically from
 [their JSON Schemas] wasn't working both for expressiveness and tool deficiency
 reasons.
+
+[another tool]: https://github.com/woodruffw/zizmor
 
 [their JSON Schemas]: https://www.schemastore.org/json/
 
