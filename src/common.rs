@@ -55,7 +55,7 @@ pub enum Permission {
 }
 
 /// An environment mapping.
-pub type Env = HashMap<String, EnvValue>;
+pub type Env = HashMap<String, Option<EnvValue>>;
 
 /// Environment variable values are always strings, but GitHub Actions
 /// allows users to configure them as various native YAML types before
