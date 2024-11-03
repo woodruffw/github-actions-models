@@ -55,7 +55,7 @@ pub enum Permission {
 }
 
 /// An environment mapping.
-pub type Env = HashMap<String, Option<EnvValue>>;
+pub type Env = HashMap<String, EnvValue>;
 
 /// Environment variable values are always strings, but GitHub Actions
 /// allows users to configure them as various native YAML types before
@@ -63,6 +63,8 @@ pub type Env = HashMap<String, Option<EnvValue>>;
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum EnvValue {
+    // Missing values are empty strings.
+    #[serde(deserialize_with = "null_to_default")]
     String(String),
     Number(f64),
     Boolean(bool),
@@ -132,11 +134,20 @@ where
     BoS::deserialize(de).map(Into::into)
 }
 
+fn null_to_default<'de, D, T>(de: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Default + Deserialize<'de>,
+{
+    let key = Option::<T>::deserialize(de)?;
+    Ok(key.unwrap_or_default())
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
-    use crate::common::{BasePermission, Permission};
+    use crate::common::{BasePermission, Env, EnvValue, Permission};
 
     use super::Permissions;
 
@@ -154,6 +165,15 @@ mod tests {
                 "security-events".into(),
                 Permission::Write
             )]))
+        );
+    }
+
+    #[test]
+    fn test_env_empty_value() {
+        let env = "foo:";
+        assert_eq!(
+            serde_yaml::from_str::<Env>(env).unwrap()["foo"],
+            EnvValue::String("".into())
         );
     }
 }

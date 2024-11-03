@@ -176,10 +176,7 @@ mod tests {
         let Secrets::Env(secrets) = serde_yaml::from_str::<Secrets>(secrets).unwrap() else {
             panic!("unexpected secrets variant");
         };
-        assert_eq!(
-            secrets["foo-secret"].as_ref().unwrap(),
-            &EnvValue::String("bar".into())
-        );
+        assert_eq!(secrets["foo-secret"], EnvValue::String("bar".into()));
     }
 
     #[test]
