@@ -136,7 +136,7 @@ impl<T> From<Option<T>> for OptionalBody<T> {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct GenericEvent {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
     pub types: Vec<String>,
 }
 
