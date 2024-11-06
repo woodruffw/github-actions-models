@@ -66,7 +66,9 @@ impl<'de> Deserialize<'de> for RunsOn {
         // has either a `group` or at least one label here.
         if let RunsOn::Group { group, labels } = &runs_on {
             if group.is_none() && labels.is_empty() {
-                return Err(de::Error::custom("oops"));
+                return Err(de::Error::custom(
+                    "runs-on must provide either `group` or one or more `labels`",
+                ));
             }
         }
 
@@ -183,7 +185,7 @@ mod tests {
         workflow::job::{Matrix, Secrets},
     };
 
-    use super::Strategy;
+    use super::{RunsOn, Strategy};
 
     #[test]
     fn test_secrets() {
@@ -231,5 +233,17 @@ matrix:
         };
 
         assert!(matches!(dims.get("foo"), Some(LoE::Expr(_))));
+    }
+
+    #[test]
+    fn test_runson_invalid_state() {
+        let runson = "group: \nlabels: []";
+
+        assert_eq!(
+            serde_yaml::from_str::<RunsOn>(&runson)
+                .unwrap_err()
+                .to_string(),
+            "runs-on must provide either `group` or one or more `labels`"
+        );
     }
 }
