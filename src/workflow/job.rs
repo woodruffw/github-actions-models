@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Serialize};
 use serde_yaml::Value;
 
 use crate::common::expr::{BoE, LoE};
@@ -40,18 +40,38 @@ pub struct NormalJob {
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
-#[serde(rename_all = "kebab-case", untagged)]
+#[serde(rename_all = "kebab-case", untagged, remote = "Self")]
 pub enum RunsOn {
     #[serde(deserialize_with = "crate::common::scalar_or_vector")]
     Target(Vec<String>),
     Group {
-        group: String,
+        group: Option<String>,
         // NOTE(ww): serde struggles with the null/empty case for custom
         // deserializers, so we help it out by telling it that it can default
         // to Vec::default.
         #[serde(deserialize_with = "crate::common::scalar_or_vector", default)]
         labels: Vec<String>,
     },
+}
+
+impl<'de> Deserialize<'de> for RunsOn {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let runs_on = Self::deserialize(deserializer)?;
+
+        // serde lacks the ability to do inter-field invariants at the derive
+        // layer, so we enforce the invariant that a `RunsOn::Group`
+        // has either a `group` or at least one label here.
+        if let RunsOn::Group { group, labels } = &runs_on {
+            if group.is_none() && labels.is_empty() {
+                return Err(de::Error::custom("oops"));
+            }
+        }
+
+        Ok(runs_on)
+    }
 }
 
 #[derive(Deserialize)]
