@@ -134,6 +134,8 @@ impl From<BoS> for String {
 #[serde(untagged)]
 pub enum If {
     Bool(bool),
+    // NOTE: expressions in conditions are "bare", not curly. So we don't
+    // use `LoE`/`BoE` here.
     Expr(String),
 }
 
