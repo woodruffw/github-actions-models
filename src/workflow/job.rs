@@ -21,7 +21,7 @@ pub struct NormalJob {
     #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
     pub needs: Vec<String>,
     pub r#if: Option<If>,
-    pub runs_on: RunsOn,
+    pub runs_on: LoE<RunsOn>,
     pub environment: Option<DeploymentEnvironment>,
     pub concurrency: Option<Concurrency>,
     #[serde(default)]
