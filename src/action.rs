@@ -11,7 +11,7 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-use crate::common::{expr::BoE, Env};
+use crate::common::{expr::BoE, Env, If};
 
 /// A GitHub Actions action definition.
 #[derive(Deserialize)]
@@ -75,7 +75,7 @@ pub struct JavaScript {
     /// An optional expression that triggers [`JavaScript::pre`] if it evaluates to `true`.
     ///
     /// If not present, defaults to `always()`
-    pub pre_if: Option<String>,
+    pub pre_if: Option<If>,
 
     /// An optional script to run, after [`JavaScript::main`].
     pub post: Option<String>,
@@ -83,7 +83,7 @@ pub struct JavaScript {
     /// An optional expression that triggers [`JavaScript::post`] if it evaluates to `true`.
     ///
     /// If not present, defaults to `always()`
-    pub post_if: Option<String>,
+    pub post_if: Option<If>,
 }
 
 /// A `runs` definition for a composite action.
@@ -121,7 +121,7 @@ pub struct RunShell {
     pub id: Option<String>,
 
     /// An optional expression that prevents this step from running unless it evaluates to `true`.
-    pub r#if: Option<String>,
+    pub r#if: Option<If>,
 
     /// An optional environment mapping for this step.
     #[serde(default)]
@@ -148,7 +148,7 @@ pub struct UseAction {
     pub with: HashMap<String, String>,
 
     /// An optional expression that prevents this step from running unless it evaluates to `true`.
-    pub r#if: Option<String>,
+    pub r#if: Option<If>,
 }
 
 /// A `runs` definition for a Docker action.
@@ -175,7 +175,7 @@ pub struct Docker {
     /// An optional expression that triggers [`Docker::pre_entrypoint`] if it evaluates to `true`.
     ///
     /// If not present, defaults to `always()`
-    pub pre_if: Option<String>,
+    pub pre_if: Option<If>,
 
     /// An optional "post" entrypoint to run, after [`Docker::entrypoint`] or the default
     /// entrypoint.
@@ -184,5 +184,5 @@ pub struct Docker {
     /// An optional expression that triggers [`Docker::post_entrypoint`] if it evaluates to `true`.
     ///
     /// If not present, defaults to `always()`
-    pub post_if: Option<String>,
+    pub post_if: Option<If>,
 }

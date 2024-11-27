@@ -127,6 +127,16 @@ impl From<BoS> for String {
     }
 }
 
+/// An `if:` condition in a job or action definition.
+///
+/// These are either booleans or bare (i.e. non-curly) expressions.
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(untagged)]
+pub enum If {
+    Bool(bool),
+    Expr(String),
+}
+
 pub(crate) fn bool_is_string<'de, D>(de: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>,
