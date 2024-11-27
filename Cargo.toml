@@ -2,7 +2,7 @@
 name = "github-actions-models"
 authors = ["William Woodruff <william@yossarian.net>"]
 description = "Unofficial, high-quality data models for GitHub Actions workflows, actions, and related components"
-version = "0.9.0"
+version = "0.10.0"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/woodruffw/github-actions-models"
