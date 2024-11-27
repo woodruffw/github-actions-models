@@ -6,7 +6,7 @@ use serde::{de, Deserialize, Serialize};
 use serde_yaml::Value;
 
 use crate::common::expr::{BoE, LoE};
-use crate::common::{Env, Permissions};
+use crate::common::{Env, If, Permissions};
 
 use super::{Concurrency, Defaults};
 
@@ -20,7 +20,7 @@ pub struct NormalJob {
     pub permissions: Permissions,
     #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
     pub needs: Vec<String>,
-    pub r#if: Option<String>,
+    pub r#if: Option<If>,
     pub runs_on: RunsOn,
     pub environment: Option<DeploymentEnvironment>,
     pub concurrency: Option<Concurrency>,
@@ -87,7 +87,7 @@ pub enum DeploymentEnvironment {
 #[serde(rename_all = "kebab-case")]
 pub struct Step {
     pub id: Option<String>,
-    pub r#if: Option<String>,
+    pub r#if: Option<If>,
     pub name: Option<String>,
     pub timeout_minutes: Option<u64>,
     #[serde(default)]
@@ -163,7 +163,7 @@ pub struct ReusableWorkflowCallJob {
     pub permissions: Permissions,
     #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
     pub needs: Vec<String>,
-    pub r#if: Option<String>,
+    pub r#if: Option<If>,
     pub uses: String,
     #[serde(default)]
     pub with: Env,

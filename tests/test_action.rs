@@ -1,6 +1,9 @@
 use std::{env, path::Path};
 
-use github_actions_models::action::{Action, Runs};
+use github_actions_models::{
+    action::{Action, Runs},
+    common::If,
+};
 
 fn load_action(name: &str) -> Action {
     let action_path = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -41,5 +44,5 @@ fn test_setup_python() {
     assert_eq!(runs.using, "node20");
     assert_eq!(runs.main, "dist/setup/index.js");
     assert_eq!(runs.post.unwrap(), "dist/cache-save/index.js");
-    assert_eq!(runs.post_if.unwrap(), "success()");
+    assert_eq!(runs.post_if.unwrap(), If::Expr("success()".into()));
 }
