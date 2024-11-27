@@ -1,9 +1,12 @@
 use std::{env, path::Path};
 
-use github_actions_models::workflow::{
-    event::OptionalBody,
-    job::{RunsOn, StepBody},
-    Job, Trigger, Workflow,
+use github_actions_models::{
+    common::expr::{ExplicitExpr, LoE},
+    workflow::{
+        event::OptionalBody,
+        job::{RunsOn, StepBody},
+        Job, Trigger, Workflow,
+    },
 };
 
 fn load_workflow(name: &str) -> Workflow {
@@ -41,7 +44,7 @@ fn test_pip_audit_ci() {
     assert_eq!(test_job.name, None);
     assert_eq!(
         test_job.runs_on,
-        RunsOn::Target(vec!["ubuntu-latest".to_string()])
+        LoE::Literal(RunsOn::Target(vec!["ubuntu-latest".to_string()]))
     );
     assert_eq!(test_job.steps.len(), 3);
 
@@ -72,4 +75,17 @@ fn test_pip_audit_ci() {
     assert!(working_directory.is_none());
     assert!(shell.is_none());
     assert!(env.is_empty());
+}
+
+#[test]
+fn test_runs_on_expr() {
+    let workflow = load_workflow("runs-on-expr.yml");
+
+    let job = workflow.jobs.get("check-bats-version").unwrap();
+    let Job::NormalJob(job) = job else { panic!() };
+
+    assert_eq!(
+        job.runs_on,
+        LoE::Expr(ExplicitExpr::from_curly("${{ matrix.runner }}").unwrap())
+    );
 }
