@@ -1,7 +1,8 @@
 //! Shared models and utilities.
 
-use std::{collections::HashMap, fmt::Display};
+use std::fmt::Display;
 
+use indexmap::IndexMap;
 use serde::{Deserialize, Deserializer, Serialize};
 
 pub mod expr;
@@ -16,7 +17,7 @@ pub enum Permissions {
     ///
     /// These are modeled with an open-ended mapping rather than a structure
     /// to make iteration over all defined permissions easier.
-    Explicit(HashMap<String, Permission>),
+    Explicit(IndexMap<String, Permission>),
 }
 
 impl Default for Permissions {
@@ -55,7 +56,7 @@ pub enum Permission {
 }
 
 /// An environment mapping.
-pub type Env = HashMap<String, EnvValue>;
+pub type Env = IndexMap<String, EnvValue>;
 
 /// Environment variable values are always strings, but GitHub Actions
 /// allows users to configure them as various native YAML types before
@@ -157,7 +158,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use indexmap::IndexMap;
 
     use crate::common::{BasePermission, Env, EnvValue, Permission};
 
@@ -173,7 +174,7 @@ mod tests {
         let perm = "security-events: write";
         assert_eq!(
             serde_yaml::from_str::<Permissions>(perm).unwrap(),
-            Permissions::Explicit(HashMap::from([(
+            Permissions::Explicit(IndexMap::from([(
                 "security-events".into(),
                 Permission::Write
             )]))

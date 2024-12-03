@@ -7,8 +7,7 @@
 //! [Metadata syntax for GitHub Actions]: https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
 //! [JSON Schema definition for GitHub Actions]: https://json.schemastore.org/github-action.json
 
-use std::collections::HashMap;
-
+use indexmap::IndexMap;
 use serde::Deserialize;
 
 use crate::common::{expr::BoE, Env, If};
@@ -21,9 +20,9 @@ pub struct Action {
     pub author: Option<String>,
     pub description: Option<String>,
     #[serde(default)]
-    pub inputs: HashMap<String, Input>,
+    pub inputs: IndexMap<String, Input>,
     #[serde(default)]
-    pub outputs: HashMap<String, Output>,
+    pub outputs: IndexMap<String, Output>,
     pub runs: Runs,
 }
 
@@ -145,7 +144,7 @@ pub struct UseAction {
 
     /// Any inputs to the action being used.
     #[serde(default)]
-    pub with: HashMap<String, String>,
+    pub with: IndexMap<String, String>,
 
     /// An optional expression that prevents this step from running unless it evaluates to `true`.
     pub r#if: Option<If>,

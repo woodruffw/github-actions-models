@@ -7,8 +7,7 @@
 //! [Workflow Syntax for GitHub Actions]: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions>
 //! [JSON Schema definition for workflows]: https://json.schemastore.org/github-workflow.json
 
-use std::collections::HashMap;
-
+use indexmap::IndexMap;
 use serde::Deserialize;
 
 use crate::common::{expr::BoE, Env, Permissions};
@@ -29,7 +28,7 @@ pub struct Workflow {
     pub env: Env,
     pub defaults: Option<Defaults>,
     pub concurrency: Option<Concurrency>,
-    pub jobs: HashMap<String, Job>,
+    pub jobs: IndexMap<String, Job>,
 }
 
 /// The triggering condition or conditions for a workflow.

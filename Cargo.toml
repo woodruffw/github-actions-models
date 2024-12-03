@@ -10,6 +10,7 @@ keywords = ["github", "ci"]
 categories = ["api-bindings"]
 
 [dependencies]
+indexmap = { version = "2.7.0", features = ["serde"] }
 serde = { version = "1.0.193", features = ["derive"] }
 serde_yaml = "0.9.29"
 

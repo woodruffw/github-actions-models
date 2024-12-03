@@ -1,8 +1,9 @@
-use std::{collections::HashSet, path::Path};
+use std::path::Path;
 
 use github_actions_models::dependabot::v2::{
     Dependabot, Interval, PackageEcosystem, RebaseStrategy,
 };
+use indexmap::IndexSet;
 
 fn load_dependabot(name: &str) -> Dependabot {
     let workflow_path = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -47,7 +48,7 @@ fn test_contents() {
     assert_eq!(github_actions.groups.len(), 1);
     assert_eq!(
         github_actions.groups["actions"].patterns,
-        HashSet::from(["*".to_string()])
+        IndexSet::from(["*".to_string()])
     );
 
     let github_actions = &dependabot.updates[2];
@@ -61,6 +62,6 @@ fn test_contents() {
     assert_eq!(github_actions.groups.len(), 1);
     assert_eq!(
         github_actions.groups["actions"].patterns,
-        HashSet::from(["*".to_string()])
+        IndexSet::from(["*".to_string()])
     );
 }

@@ -1,7 +1,6 @@
 //! Workflow jobs.
 
-use std::collections::HashMap;
-
+use indexmap::IndexMap;
 use serde::{de, Deserialize, Serialize};
 use serde_yaml::Value;
 
@@ -25,7 +24,7 @@ pub struct NormalJob {
     pub environment: Option<DeploymentEnvironment>,
     pub concurrency: Option<Concurrency>,
     #[serde(default)]
-    pub outputs: HashMap<String, String>,
+    pub outputs: IndexMap<String, String>,
     #[serde(default)]
     pub env: Env,
     pub defaults: Option<Defaults>,
@@ -36,7 +35,7 @@ pub struct NormalJob {
     pub continue_on_error: BoE,
     pub container: Option<Container>,
     #[serde(default)]
-    pub services: HashMap<String, Container>,
+    pub services: IndexMap<String, Container>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -126,11 +125,11 @@ pub struct Strategy {
 #[serde(rename_all = "kebab-case")]
 pub struct Matrix {
     #[serde(default)]
-    pub include: LoE<Vec<HashMap<String, Value>>>,
+    pub include: LoE<Vec<IndexMap<String, Value>>>,
     #[serde(default)]
-    pub exclude: LoE<Vec<HashMap<String, Value>>>,
+    pub exclude: LoE<Vec<IndexMap<String, Value>>>,
     #[serde(flatten)]
-    pub dimensions: LoE<HashMap<String, LoE<Vec<Value>>>>,
+    pub dimensions: LoE<IndexMap<String, LoE<Vec<Value>>>>,
 }
 
 #[derive(Deserialize)]
