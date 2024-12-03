@@ -1,7 +1,6 @@
 //! Workflow events.
 
-use std::collections::HashMap;
-
+use indexmap::IndexMap;
 use serde::Deserialize;
 
 /// "Bare" workflow event triggers.
@@ -180,11 +179,11 @@ pub struct Cron {
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCall {
     #[serde(default)]
-    pub inputs: HashMap<String, WorkflowCallInput>,
+    pub inputs: IndexMap<String, WorkflowCallInput>,
     #[serde(default)]
-    pub outputs: HashMap<String, WorkflowCallOutput>,
+    pub outputs: IndexMap<String, WorkflowCallOutput>,
     #[serde(default)]
-    pub secrets: HashMap<String, WorkflowCallSecret>,
+    pub secrets: IndexMap<String, WorkflowCallSecret>,
 }
 
 /// A single input in a `workflow_call` event trigger body.
@@ -219,7 +218,7 @@ pub struct WorkflowCallSecret {
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowDispatch {
     #[serde(default)]
-    pub inputs: HashMap<String, WorkflowDispatchInput>, // TODO: WorkflowDispatchInput
+    pub inputs: IndexMap<String, WorkflowDispatchInput>, // TODO: WorkflowDispatchInput
 }
 
 /// A single input in a `workflow_dispatch` event trigger body.

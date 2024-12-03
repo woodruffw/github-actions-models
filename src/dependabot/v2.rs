@@ -4,8 +4,7 @@
 //! * [Configuration options for the `dependabot.yml` file](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file)
 //! * [JSON Schema for Dependabot v2](https://json.schemastore.org/dependabot-2.0.json)
 
-use std::collections::{HashMap, HashSet};
-
+use indexmap::{IndexMap, IndexSet};
 use serde::Deserialize;
 
 /// A `dependabot.yml` configuration file.
@@ -17,7 +16,7 @@ pub struct Dependabot {
     #[serde(default)]
     pub enable_beta_ecosystems: bool,
     #[serde(default)]
-    pub registries: HashMap<String, Registry>,
+    pub registries: IndexMap<String, Registry>,
     pub updates: Vec<Update>,
 }
 
@@ -96,11 +95,11 @@ pub struct Update {
     #[serde(default)]
     pub allow: Vec<Allow>,
     #[serde(default)]
-    pub assignees: HashSet<String>,
+    pub assignees: IndexSet<String>,
     pub commit_message: Option<CommitMessage>,
     pub directory: String,
     #[serde(default)]
-    pub groups: HashMap<String, Group>,
+    pub groups: IndexMap<String, Group>,
     #[serde(default)]
     pub ignore: Vec<Ignore>,
     #[serde(default)]
@@ -109,7 +108,7 @@ pub struct Update {
     ///
     /// The default label is `dependencies`.
     #[serde(default = "default_labels")]
-    pub labels: HashSet<String>,
+    pub labels: IndexSet<String>,
     pub milestone: Option<u64>,
     /// The maximum number of pull requests to open at a time from this
     /// update group.
@@ -124,7 +123,7 @@ pub struct Update {
     #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
     pub registries: Vec<String>,
     #[serde(default)]
-    pub reviewers: HashSet<String>,
+    pub reviewers: IndexSet<String>,
     pub schedule: Schedule,
     pub target_branch: Option<String>,
     #[serde(default)]
@@ -133,8 +132,8 @@ pub struct Update {
 }
 
 #[inline]
-fn default_labels() -> HashSet<String> {
-    HashSet::from(["dependencies".to_string()])
+fn default_labels() -> IndexSet<String> {
+    IndexSet::from(["dependencies".to_string()])
 }
 
 #[inline]
@@ -180,11 +179,11 @@ pub struct Group {
     /// [`DependencyType::Production`].
     pub dependency_type: Option<DependencyType>,
     #[serde(default)]
-    pub patterns: HashSet<String>,
+    pub patterns: IndexSet<String>,
     #[serde(default)]
-    pub exclude_patterns: HashSet<String>,
+    pub exclude_patterns: IndexSet<String>,
     #[serde(default)]
-    pub update_types: HashSet<UpdateType>,
+    pub update_types: IndexSet<UpdateType>,
 }
 
 /// Update types for grouping.
@@ -204,9 +203,9 @@ pub struct Ignore {
     /// These are, inexplicably, not [`UpdateType`] variants.
     /// Instead, they're strings like `"version-update:semver-{major,minor,patch}"`.
     #[serde(default)]
-    pub update_types: HashSet<String>,
+    pub update_types: IndexSet<String>,
     #[serde(default)]
-    pub versions: HashSet<String>,
+    pub versions: IndexSet<String>,
 }
 
 /// An "allow"/"deny" toggle.
