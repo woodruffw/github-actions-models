@@ -41,8 +41,7 @@ impl ExplicitExpr {
     /// `${{ body }}`. Leading and trailing whitespace within
     /// the expression body is removed.
     pub fn as_bare(&self) -> &str {
-        self
-            .as_curly()
+        self.as_curly()
             .strip_prefix("${{")
             .and_then(|e| e.strip_suffix("}}"))
             .map(|e| e.trim())
