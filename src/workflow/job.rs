@@ -239,7 +239,7 @@ matrix:
         let runson = "group: \nlabels: []";
 
         assert_eq!(
-            serde_yaml::from_str::<RunsOn>(&runson)
+            serde_yaml::from_str::<RunsOn>(runson)
                 .unwrap_err()
                 .to_string(),
             "runs-on must provide either `group` or one or more `labels`"

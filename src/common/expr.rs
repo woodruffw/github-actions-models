@@ -41,12 +41,12 @@ impl ExplicitExpr {
     /// `${{ body }}`. Leading and trailing whitespace within
     /// the expression body is removed.
     pub fn as_bare(&self) -> &str {
-        return self
+        self
             .as_curly()
             .strip_prefix("${{")
             .and_then(|e| e.strip_suffix("}}"))
             .map(|e| e.trim())
-            .expect("invariant violated: ExplicitExpr must be an expression");
+            .expect("invariant violated: ExplicitExpr must be an expression")
     }
 }
 
@@ -113,7 +113,7 @@ mod tests {
     #[test]
     fn test_expr() {
         let expr = "\"  ${{ foo }} \\t \"";
-        let expr: ExplicitExpr = serde_yaml::from_str(&expr).unwrap();
+        let expr: ExplicitExpr = serde_yaml::from_str(expr).unwrap();
         assert_eq!(expr.as_bare(), "foo");
     }
 
