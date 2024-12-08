@@ -66,7 +66,7 @@ fn test_pip_audit_ci() {
         run,
         working_directory,
         shell,
-        env,
+        env: LoE::Literal(env),
     } = &test_job.steps[2].body
     else {
         panic!("expected run step");

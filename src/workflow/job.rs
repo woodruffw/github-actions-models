@@ -109,7 +109,7 @@ pub enum StepBody {
         working_directory: Option<String>,
         shell: Option<String>,
         #[serde(default)]
-        env: Env,
+        env: LoE<Env>,
     },
 }
 
