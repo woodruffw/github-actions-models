@@ -1,0 +1,39 @@
+# https://raw.githubusercontent.com/jazzband/tablib/dcab406c553fc8b3c2e0aef955e9e8adea0590d8/.github/workflows/docs-lint.yml
+name: Docs and lint
+
+on: [push, pull_request, workflow_dispatch]
+
+env:
+  FORCE_COLOR: 1
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env:
+          - TOXENV: docs
+          - TOXENV: lint
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: pip
+          cache-dependency-path: "pyproject.toml"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade tox
+
+      - name: Tox
+        run: tox
+        env: ${{ matrix.env }}
