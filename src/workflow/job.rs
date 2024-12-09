@@ -26,7 +26,7 @@ pub struct NormalJob {
     #[serde(default)]
     pub outputs: IndexMap<String, String>,
     #[serde(default)]
-    pub env: Env,
+    pub env: LoE<Env>,
     pub defaults: Option<Defaults>,
     pub steps: Vec<Step>,
     pub timeout_minutes: Option<LoE<u64>>,
@@ -140,7 +140,7 @@ pub enum Container {
         image: String,
         credentials: Option<DockerCredentials>,
         #[serde(default)]
-        env: Env,
+        env: LoE<Env>,
         // TODO: model `ports`?
         #[serde(default)]
         volumes: Vec<String>,
