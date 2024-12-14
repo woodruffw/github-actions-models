@@ -1,6 +1,13 @@
 # https://github.com/letsencrypt/boulder/blob/e182d889b220421caefbf384b36467f771b5f8d3/.github/workflows/boulder-ci.yml
 # Boulder CI test suite workflow
 
+# Copyright: 2014-2024 The Boulder Developers
+#
+# Licensed under the Mozilla Public License 2.0
+#
+# https://github.com/letsencrypt/boulder/blob/main/LICENSE.txt
+#
+
 name: Boulder CI
 
 # Controls when the action will run.

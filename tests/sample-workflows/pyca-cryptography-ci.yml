@@ -1,4 +1,8 @@
 # https://github.com/pyca/cryptography/blob/4a42c1c961c678d784de763d82794527c2374f2f/.github/workflows/ci.yml
+
+# Copyright 2013-2024, Individual Contributors to pyca/cryptography
+# License: Apache-2.0 license OR BSD-3-Clause license
+
 name: CI
 on:
   pull_request: {}

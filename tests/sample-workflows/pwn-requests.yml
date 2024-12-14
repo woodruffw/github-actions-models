@@ -1,5 +1,8 @@
 # from: https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
 
+# Copyright: 2021 Jaroslav Lobačevski
+# License: Unknown, maybe fair use? Code comes from blog post.
+
 # INSECURE. Provided as an example only.
 on: pull_request_target
 

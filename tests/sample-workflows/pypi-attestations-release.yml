@@ -1,4 +1,8 @@
 # https://github.com/trailofbits/pypi-attestations/blob/b5920dee025c93b2bfefbcccc6acc7eab7b8a18e/.github/workflows/release.yml
+
+# Copyright 2024 Trail of Bits
+# License: Apache-2.0
+
 on:
   release:
     types:

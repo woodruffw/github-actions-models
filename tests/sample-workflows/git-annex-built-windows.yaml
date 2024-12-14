@@ -1,4 +1,12 @@
 # https://github.com/datalad/git-annex/blob/58898b7a9185a94852ac059c3ff1cc3f2fd6deef/.github/workflows/build-windows.yaml
+
+# Copyright 2022 The Sigstore Authors
+#
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3
+#
+#      https://git-annex.branchable.com/license/AGPL
+#
+
 name: Build git-annex on Windows
 
 on:
