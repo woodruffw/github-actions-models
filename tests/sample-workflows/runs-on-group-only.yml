@@ -1,4 +1,8 @@
 # https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#choosing-runners-in-a-group
+
+# Copyright: 2024 GitHub, Inc.
+# License: Creative Commons Attribution 4.0 International
+
 name: learn-github-actions
 on: [push]
 jobs:

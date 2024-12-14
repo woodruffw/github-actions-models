@@ -1,4 +1,10 @@
 # https://github.com/rnpgp/rnp/blob/ddcbaa932f01a349969e9689de5bccd485090d02/.github/workflows/centos-and-fedora.yml
+
+# Copyright:
+#  2017-2024, Ribose Inc.
+#  2009-2010, The NetBSD Foundation, Inc.
+# License: BSD-2-clause
+
 name: centos-and-fedora
 on:
   push:
