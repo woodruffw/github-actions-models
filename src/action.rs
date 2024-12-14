@@ -126,7 +126,7 @@ pub struct RunShell {
     #[serde(default)]
     pub env: Env,
 
-    /// A an optional boolean or expression that, if `true`, prevents the job from failing when
+    /// An optional boolean or expression that, if `true`, prevents the job from failing when
     /// this step fails.
     #[serde(default)]
     pub continue_on_error: BoE,
