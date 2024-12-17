@@ -10,7 +10,10 @@
 use indexmap::IndexMap;
 use serde::Deserialize;
 
-use crate::common::{expr::BoE, Env, Permissions};
+use crate::common::{
+    expr::{BoE, LoE},
+    Env, Permissions,
+};
 
 pub mod event;
 pub mod job;
@@ -25,7 +28,7 @@ pub struct Workflow {
     #[serde(default)]
     pub permissions: Permissions,
     #[serde(default)]
-    pub env: Env,
+    pub env: LoE<Env>,
     pub defaults: Option<Defaults>,
     pub concurrency: Option<Concurrency>,
     pub jobs: IndexMap<String, Job>,
