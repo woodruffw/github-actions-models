@@ -10,7 +10,10 @@
 use indexmap::IndexMap;
 use serde::Deserialize;
 
-use crate::common::{expr::BoE, Env, If};
+use crate::common::{
+    expr::{BoE, LoE},
+    Env, If,
+};
 
 /// A GitHub Actions action definition.
 #[derive(Deserialize)]
@@ -96,58 +99,75 @@ pub struct Composite {
 }
 
 /// An individual composite action step.
-#[derive(Deserialize)]
-#[serde(rename_all = "kebab-case", untagged)]
-pub enum Step {
-    RunShell(RunShell),
-    UseAction(UseAction),
-}
-
-/// A step that runs a command in a shell.
+///
+/// This is similar, but not identical to [`crate::workflow::job::Step`].
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub struct RunShell {
-    /// The command to run.
-    pub run: String,
-
-    /// The shell to run in.
-    pub shell: String,
-
-    /// An optional name for this step.
-    pub name: Option<String>,
-
-    /// An optional ID for this step.
+pub struct Step {
+    /// An optional ID for this composite step.
     pub id: Option<String>,
 
-    /// An optional expression that prevents this step from running unless it evaluates to `true`.
+    /// An optional expression that prevents this composite step from running unless it evaluates to `true`.
     pub r#if: Option<If>,
 
-    /// An optional environment mapping for this step.
-    #[serde(default)]
-    pub env: Env,
+    /// An optional name for this composite step.
+    pub name: Option<String>,
 
     /// An optional boolean or expression that, if `true`, prevents the job from failing when
-    /// this step fails.
+    /// this composite step fails.
     #[serde(default)]
     pub continue_on_error: BoE,
 
-    /// An optional working directory to run [`RunShell::run`] from.
-    pub working_directory: Option<String>,
+    /// The `run:` or `uses:` body for this composite step.
+    #[serde(flatten)]
+    pub body: StepBody,
 }
 
-/// A step that uses another GitHub Action.
+/// The body of a composite action step.
 #[derive(Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct UseAction {
-    /// The GitHub Action being used.
-    pub uses: String,
+#[serde(rename_all = "kebab-case", untagged)]
+pub enum StepBody {
+    /// A step that uses another GitHub Action.
+    Uses {
+        /// The GitHub Action being used.
+        uses: String,
 
-    /// Any inputs to the action being used.
-    #[serde(default)]
-    pub with: IndexMap<String, String>,
+        /// Any inputs to the action being used.
+        #[serde(default)]
+        with: IndexMap<String, String>,
 
-    /// An optional expression that prevents this step from running unless it evaluates to `true`.
-    pub r#if: Option<If>,
+        /// An optional expression that prevents this step from running unless it evaluates to `true`.
+        r#if: Option<If>,
+    },
+    /// A step that runs a command in a shell.
+    Run {
+        /// The command to run.
+        run: String,
+
+        /// The shell to run in.
+        shell: String,
+
+        /// An optional name for this step.
+        name: Option<String>,
+
+        /// An optional ID for this step.
+        id: Option<String>,
+
+        /// An optional expression that prevents this step from running unless it evaluates to `true`.
+        r#if: Option<If>,
+
+        /// An optional environment mapping for this step.
+        #[serde(default)]
+        env: LoE<Env>,
+
+        /// An optional boolean or expression that, if `true`, prevents the job from failing when
+        /// this step fails.
+        #[serde(default)]
+        continue_on_error: BoE,
+
+        /// An optional working directory to run [`RunShell::run`] from.
+        working_directory: Option<String>,
+    },
 }
 
 /// A `runs` definition for a Docker action.
