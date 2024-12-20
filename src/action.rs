@@ -148,11 +148,6 @@ pub enum StepBody {
         #[serde(default)]
         env: LoE<Env>,
 
-        /// An optional boolean or expression that, if `true`, prevents the job from failing when
-        /// this step fails.
-        #[serde(default)]
-        continue_on_error: BoE,
-
         /// An optional working directory to run [`RunShell::run`] from.
         working_directory: Option<String>,
     },
