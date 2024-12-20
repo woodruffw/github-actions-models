@@ -135,9 +135,6 @@ pub enum StepBody {
         /// Any inputs to the action being used.
         #[serde(default)]
         with: IndexMap<String, String>,
-
-        /// An optional expression that prevents this step from running unless it evaluates to `true`.
-        r#if: Option<If>,
     },
     /// A step that runs a command in a shell.
     Run {
@@ -146,15 +143,6 @@ pub enum StepBody {
 
         /// The shell to run in.
         shell: String,
-
-        /// An optional name for this step.
-        name: Option<String>,
-
-        /// An optional ID for this step.
-        id: Option<String>,
-
-        /// An optional expression that prevents this step from running unless it evaluates to `true`.
-        r#if: Option<If>,
 
         /// An optional environment mapping for this step.
         #[serde(default)]
