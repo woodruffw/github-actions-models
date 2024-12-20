@@ -134,7 +134,7 @@ pub enum StepBody {
 
         /// Any inputs to the action being used.
         #[serde(default)]
-        with: IndexMap<String, String>,
+        with: Env,
     },
     /// A step that runs a command in a shell.
     Run {
