@@ -85,12 +85,24 @@ pub enum DeploymentEnvironment {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Step {
+    /// An optional ID for this step.
     pub id: Option<String>,
+
+    /// An optional expression that prevents this step from running unless it evaluates to `true`.
     pub r#if: Option<If>,
+
+    /// An optional name for this step.
     pub name: Option<String>,
+
+    /// An optional timeout for this step, in minutes.
     pub timeout_minutes: Option<u64>,
+
+    /// An optional boolean or expression that, if `true`, prevents the job from failing when
+    /// this step fails.
     #[serde(default)]
     pub continue_on_error: BoE,
+
+    /// The `run:` or `uses:` body for this step.
     #[serde(flatten)]
     pub body: StepBody,
 }
@@ -99,15 +111,26 @@ pub struct Step {
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum StepBody {
     Uses {
+        /// The GitHub Action being used.
         uses: String,
+
+        /// Any inputs to the action being used.
         #[serde(default)]
         with: Env,
     },
     Run {
+        /// The command to run.
         #[serde(deserialize_with = "crate::common::bool_is_string")]
         run: String,
+
+        /// An optional working directory to run [`StepBody::Run::run`] from.
         working_directory: Option<String>,
+
+        /// An optional shell to run in. Defaults to the job or workflow's
+        /// default shell.
         shell: Option<String>,
+
+        /// An optional environment mapping for this step.
         #[serde(default)]
         env: LoE<Env>,
     },
