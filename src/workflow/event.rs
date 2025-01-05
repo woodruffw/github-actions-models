@@ -183,7 +183,7 @@ pub struct WorkflowCall {
     #[serde(default)]
     pub outputs: IndexMap<String, WorkflowCallOutput>,
     #[serde(default)]
-    pub secrets: IndexMap<String, WorkflowCallSecret>,
+    pub secrets: IndexMap<String, Option<WorkflowCallSecret>>,
 }
 
 /// A single input in a `workflow_call` event trigger body.
