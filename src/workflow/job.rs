@@ -1,11 +1,11 @@
 //! Workflow jobs.
 
 use indexmap::IndexMap;
-use serde::{de, Deserialize, Serialize};
+use serde::{de, Deserialize};
 use serde_yaml::Value;
 
 use crate::common::expr::{BoE, LoE};
-use crate::common::{Env, If, Permissions};
+use crate::common::{Env, If, Permissions, Uses};
 
 use super::{Concurrency, Defaults};
 
@@ -82,7 +82,7 @@ pub enum DeploymentEnvironment {
     NameURL { name: String, url: Option<String> },
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Step {
     /// An optional ID for this step.
@@ -107,12 +107,13 @@ pub struct Step {
     pub body: StepBody,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum StepBody {
     Uses {
         /// The GitHub Action being used.
-        uses: String,
+        #[serde(deserialize_with = "crate::common::step_uses")]
+        uses: Uses,
 
         /// Any inputs to the action being used.
         #[serde(default)]
@@ -186,7 +187,8 @@ pub struct ReusableWorkflowCallJob {
     #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
     pub needs: Vec<String>,
     pub r#if: Option<If>,
-    pub uses: String,
+    #[serde(deserialize_with = "crate::common::reusable_step_uses")]
+    pub uses: Uses,
     #[serde(default)]
     pub with: Env,
     pub secrets: Option<Secrets>,

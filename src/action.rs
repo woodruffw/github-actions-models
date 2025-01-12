@@ -12,7 +12,7 @@ use serde::Deserialize;
 
 use crate::common::{
     expr::{BoE, LoE},
-    Env, If,
+    Env, If, Uses,
 };
 
 /// A GitHub Actions action definition.
@@ -130,7 +130,8 @@ pub enum StepBody {
     /// A step that uses another GitHub Action.
     Uses {
         /// The GitHub Action being used.
-        uses: String,
+        #[serde(deserialize_with = "crate::common::step_uses")]
+        uses: Uses,
 
         /// Any inputs to the action being used.
         #[serde(default)]

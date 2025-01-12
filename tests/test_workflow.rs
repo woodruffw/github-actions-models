@@ -1,7 +1,10 @@
-use std::{env, path::Path};
+use std::{env, path::Path, str::FromStr};
 
 use github_actions_models::{
-    common::expr::{ExplicitExpr, LoE},
+    common::{
+        expr::{ExplicitExpr, LoE},
+        Uses,
+    },
     workflow::{
         event::OptionalBody,
         job::{RunsOn, StepBody},
@@ -51,13 +54,13 @@ fn test_pip_audit_ci() {
     let StepBody::Uses { uses, with } = &test_job.steps[0].body else {
         panic!("expected uses step");
     };
-    assert_eq!(uses, "actions/checkout@v4.1.1");
+    assert_eq!(uses, &Uses::from_str("actions/checkout@v4.1.1").unwrap());
     assert!(with.is_empty());
 
     let StepBody::Uses { uses, with } = &test_job.steps[1].body else {
         panic!("expected uses step");
     };
-    assert_eq!(uses, "actions/setup-python@v5");
+    assert_eq!(uses, &Uses::from_str("actions/setup-python@v5").unwrap());
     assert_eq!(with["python-version"].to_string(), "${{ matrix.python }}");
     assert_eq!(with["cache"].to_string(), "pip");
     assert_eq!(with["cache-dependency-path"].to_string(), "pyproject.toml");
