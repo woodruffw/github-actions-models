@@ -358,12 +358,10 @@ where
     let uses = step_uses(de)?;
 
     match uses {
-        Uses::Local(local) if local.git_ref.is_none() => Err(de::Error::custom(
-            "local action must have `@<ref>` in reusable workflow",
-        )),
         Uses::Repository(repo) if repo.git_ref.is_none() => Err(de::Error::custom(
             "repo action must have `@<ref> in reusable workflow",
         )),
+        // NOTE: local reusable workflows do not have to be pinned.
         Uses::Local(_) => Ok(uses),
         Uses::Repository(_) => Ok(uses),
         // `docker://` is never valid in reusable workflow uses.
