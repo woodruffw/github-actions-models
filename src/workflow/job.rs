@@ -95,7 +95,7 @@ pub struct Step {
     pub name: Option<String>,
 
     /// An optional timeout for this step, in minutes.
-    pub timeout_minutes: Option<u64>,
+    pub timeout_minutes: Option<LoE<u64>>,
 
     /// An optional boolean or expression that, if `true`, prevents the job from failing when
     /// this step fails.
