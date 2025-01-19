@@ -1,7 +1,7 @@
 //! Workflow events.
 
 use indexmap::IndexMap;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// "Bare" workflow event triggers.
 ///
@@ -55,27 +55,27 @@ pub enum BareEvent {
 /// Workflow event triggers, with bodies.
 ///
 /// Like [`BareEvent`], but with per-event properties.
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, Serialize)]
 #[serde(default, rename_all = "snake_case")]
 pub struct Events {
     pub branch_protection_rule: OptionalBody<GenericEvent>,
     pub check_run: OptionalBody<GenericEvent>,
     pub check_suite: OptionalBody<GenericEvent>,
-    // TODO: create + delete
-    // TODO: deployment + deployment_status
+    // NOTE: `create` and `delete` are omitted, since they are always bare.
+    // NOTE: `deployment` and `deployment_status` are omitted, since they are always bare.
     pub discussion: OptionalBody<GenericEvent>,
     pub discussion_comment: OptionalBody<GenericEvent>,
-    // TODO: fork + gollum
+    // NOTE: `fork` and `gollum` are omitted, since they are always bare.
     pub issue_comment: OptionalBody<GenericEvent>,
     pub issues: OptionalBody<GenericEvent>,
     pub label: OptionalBody<GenericEvent>,
     pub merge_group: OptionalBody<GenericEvent>,
     pub milestone: OptionalBody<GenericEvent>,
-    // TODO: page_build
+    // NOTE: `page_build` is omitted, since it is always bare.
     pub project: OptionalBody<GenericEvent>,
     pub project_card: OptionalBody<GenericEvent>,
     pub project_column: OptionalBody<GenericEvent>,
-    // TODO: public
+    // NOTE: `public` is omitted, since it is always bare.
     pub pull_request: OptionalBody<PullRequest>,
     pub pull_request_comment: OptionalBody<GenericEvent>,
     pub pull_request_review: OptionalBody<GenericEvent>,
@@ -87,12 +87,65 @@ pub struct Events {
     pub release: OptionalBody<GenericEvent>,
     pub repository_dispatch: OptionalBody<GenericEvent>,
     pub schedule: OptionalBody<Vec<Cron>>,
-    // TODO: status
+    // NOTE: `status` is omitted, since it is always bare.
     pub watch: OptionalBody<GenericEvent>,
     pub workflow_call: OptionalBody<WorkflowCall>,
     // TODO: Custom type.
     pub workflow_dispatch: OptionalBody<WorkflowDispatch>,
     pub workflow_run: OptionalBody<WorkflowRun>,
+}
+
+impl Events {
+    /// Count the number of present event triggers.
+    ///
+    /// **IMPORTANT**: This must be kept in sync with the number of fields in `Events`.
+    pub fn count(&self) -> u32 {
+        // This is a little goofy, but it's faster than reflecting over the struct
+        // or doing a serde round-trip.
+        let mut count = 0;
+
+        macro_rules! count_if_present {
+            ($($field:ident),*) => {
+                $(
+                    if !matches!(self.$field, OptionalBody::Missing) {
+                        count += 1;
+                    }
+                )*
+            };
+        }
+
+        count_if_present!(
+            branch_protection_rule,
+            check_run,
+            check_suite,
+            discussion,
+            discussion_comment,
+            issue_comment,
+            issues,
+            label,
+            merge_group,
+            milestone,
+            project,
+            project_card,
+            project_column,
+            pull_request,
+            pull_request_comment,
+            pull_request_review,
+            pull_request_review_comment,
+            pull_request_target,
+            push,
+            registry_package,
+            release,
+            repository_dispatch,
+            schedule,
+            watch,
+            workflow_call,
+            workflow_dispatch,
+            workflow_run
+        );
+
+        count
+    }
 }
 
 /// A generic container type for distinguishing between
@@ -102,7 +155,7 @@ pub struct Events {
 /// between the non-presence of an event (no trigger) and the presence
 /// of an empty event body (e.g. `pull_request:`), which means "trigger
 /// with the defaults for this event type."
-#[derive(Default)]
+#[derive(Default, Serialize)]
 pub enum OptionalBody<T> {
     Default,
     #[default]
@@ -132,7 +185,7 @@ impl<T> From<Option<T>> for OptionalBody<T> {
 }
 
 /// A generic event trigger body.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct GenericEvent {
     #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
@@ -140,7 +193,7 @@ pub struct GenericEvent {
 }
 
 /// The body of a `pull_request` event trigger.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct PullRequest {
     #[serde(default)]
@@ -154,7 +207,7 @@ pub struct PullRequest {
 }
 
 /// The body of a `push` event trigger.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Push {
     #[serde(flatten)]
@@ -168,14 +221,14 @@ pub struct Push {
 }
 
 /// The body of a `cron` event trigger.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Cron {
     pub cron: String,
 }
 
 /// The body of a `workflow_call` event trigger.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCall {
     #[serde(default)]
@@ -187,7 +240,7 @@ pub struct WorkflowCall {
 }
 
 /// A single input in a `workflow_call` event trigger body.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCallInput {
     pub description: Option<String>,
@@ -198,7 +251,7 @@ pub struct WorkflowCallInput {
 }
 
 /// A single output in a `workflow_call` event trigger body.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCallOutput {
     pub description: Option<String>,
@@ -206,7 +259,7 @@ pub struct WorkflowCallOutput {
 }
 
 /// A single secret in a `workflow_call` event trigger body.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCallSecret {
     pub description: Option<String>,
@@ -214,7 +267,7 @@ pub struct WorkflowCallSecret {
 }
 
 /// The body of a `workflow_dispatch` event trigger.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowDispatch {
     #[serde(default)]
@@ -222,7 +275,7 @@ pub struct WorkflowDispatch {
 }
 
 /// A single input in a `workflow_dispatch` event trigger body.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowDispatchInput {
     pub description: Option<String>,
@@ -237,7 +290,7 @@ pub struct WorkflowDispatchInput {
 }
 
 /// The body of a `workflow_run` event trigger.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowRun {
     pub workflows: Vec<String>,
@@ -248,7 +301,7 @@ pub struct WorkflowRun {
 }
 
 /// Branch filtering variants for event trigger bodies.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum BranchFilters {
     Branches(Vec<String>),
@@ -256,7 +309,7 @@ pub enum BranchFilters {
 }
 
 /// Tag filtering variants for event trigger bodies.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum TagFilters {
     Tags(Vec<String>),
@@ -264,9 +317,24 @@ pub enum TagFilters {
 }
 
 /// Path filtering variants for event trigger bodies.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum PathFilters {
     Paths(Vec<String>),
     PathsIgnore(Vec<String>),
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_events_count() {
+        let events = "
+push:
+pull_request:
+workflow_dispatch:
+issue_comment:";
+
+        let events = serde_yaml::from_str::<super::Events>(events).unwrap();
+        assert_eq!(events.count(), 4);
+    }
 }
