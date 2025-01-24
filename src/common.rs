@@ -219,7 +219,7 @@ impl FromStr for LocalUses {
 
         // TODO: Overly conservative? `uses: ./foo/bar@` might be valid if
         // `./foo/bar@/action.yml` exists.
-        if git_ref.map_or(false, |git_ref| git_ref.is_empty()) {
+        if git_ref.is_some_and(|git_ref| git_ref.is_empty()) {
             return Err(UsesError(format!(
                 "local uses is missing git ref after '@': {uses}"
             )));
