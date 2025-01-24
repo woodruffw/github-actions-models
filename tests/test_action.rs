@@ -28,7 +28,7 @@ fn test_load_all() {
 fn test_setup_python() {
     let setup_python = load_action("setup-python.yml");
 
-    assert_eq!(setup_python.name, "Setup Python");
+    assert_eq!(setup_python.name.as_deref(), Some("Setup Python"));
     assert_eq!(
         setup_python.description.unwrap(),
         "Set up a specific version of Python and add the command-line tools to the PATH."

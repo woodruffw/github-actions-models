@@ -19,7 +19,10 @@ use crate::common::{
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Action {
-    pub name: String,
+    /// The action's name.
+    ///
+    /// NOTE: GitHub documents the action's name as required, but experimentally it is not.
+    pub name: Option<String>,
     pub author: Option<String>,
     pub description: Option<String>,
     #[serde(default)]
