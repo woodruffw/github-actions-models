@@ -36,7 +36,8 @@ pub struct Action {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Input {
-    pub description: String,
+    // NOTE: documented as required, but experimentally it is not.
+    pub description: Option<String>,
     pub required: Option<bool>,
     pub default: Option<String>,
 }
@@ -45,7 +46,8 @@ pub struct Input {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Output {
-    pub description: String,
+    // NOTE: documented as required, but experimentally it is not.
+    pub description: Option<String>,
     // NOTE: not optional for composite actions, but this is not worth modeling.
     pub value: Option<String>,
 }
