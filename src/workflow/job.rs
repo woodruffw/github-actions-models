@@ -142,7 +142,7 @@ pub enum StepBody {
 pub struct Strategy {
     pub matrix: Option<LoE<Matrix>>,
     pub fail_fast: Option<BoE>,
-    pub max_parallel: Option<u64>,
+    pub max_parallel: Option<LoE<u64>>,
 }
 
 #[derive(Deserialize)]
