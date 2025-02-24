@@ -3,6 +3,8 @@
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
+use crate::common::EnvValue;
+
 /// "Bare" workflow event triggers.
 ///
 /// These appear when a workflow is triggered with an event with no context,
@@ -286,7 +288,7 @@ pub struct WorkflowDispatchInput {
     pub r#type: Option<String>,
     // Only present when `type` is `choice`.
     #[serde(default)]
-    pub options: Vec<String>,
+    pub options: Vec<EnvValue>,
 }
 
 /// The body of a `workflow_run` event trigger.

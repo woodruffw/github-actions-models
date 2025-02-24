@@ -64,6 +64,10 @@ pub type Env = IndexMap<String, EnvValue>;
 /// Environment variable values are always strings, but GitHub Actions
 /// allows users to configure them as various native YAML types before
 /// internal stringification.
+///
+/// This type also gets used for other places where GitHub Actions
+/// contextually reinterprets a YAML value as a string, e.g. trigger
+/// input values.
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum EnvValue {
