@@ -1,7 +1,7 @@
 //! Workflow jobs.
 
 use indexmap::IndexMap;
-use serde::{de, Deserialize};
+use serde::{Deserialize, de};
 use serde_yaml::Value;
 
 use crate::common::expr::{BoE, LoE};
@@ -205,7 +205,7 @@ pub enum Secrets {
 #[cfg(test)]
 mod tests {
     use crate::{
-        common::{expr::LoE, EnvValue},
+        common::{EnvValue, expr::LoE},
         workflow::job::{Matrix, Secrets},
     };
 

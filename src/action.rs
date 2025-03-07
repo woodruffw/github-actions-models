@@ -11,8 +11,8 @@ use indexmap::IndexMap;
 use serde::Deserialize;
 
 use crate::common::{
-    expr::{BoE, LoE},
     Env, If, Uses,
+    expr::{BoE, LoE},
 };
 
 /// A GitHub Actions action definition.
