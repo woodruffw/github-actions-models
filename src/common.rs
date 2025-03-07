@@ -6,7 +6,7 @@ use std::{
 };
 
 use indexmap::IndexMap;
-use serde::{de, Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, de};
 
 pub mod expr;
 
@@ -383,7 +383,7 @@ mod tests {
     use crate::common::{BasePermission, Env, EnvValue, Permission};
 
     use super::{
-        reusable_step_uses, DockerUses, LocalUses, Permissions, RepositoryUses, Uses, UsesError,
+        DockerUses, LocalUses, Permissions, RepositoryUses, Uses, UsesError, reusable_step_uses,
     };
 
     #[test]

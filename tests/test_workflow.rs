@@ -2,13 +2,13 @@ use std::{env, path::Path, str::FromStr};
 
 use github_actions_models::{
     common::{
-        expr::{ExplicitExpr, LoE},
         Uses,
+        expr::{ExplicitExpr, LoE},
     },
     workflow::{
+        Job, Trigger, Workflow,
         event::OptionalBody,
         job::{RunsOn, StepBody},
-        Job, Trigger, Workflow,
     },
 };
 
