@@ -57,7 +57,7 @@ pub enum BareEvent {
 /// Workflow event triggers, with bodies.
 ///
 /// Like [`BareEvent`], but with per-event properties.
-#[derive(Default, Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 #[serde(default, rename_all = "snake_case")]
 pub struct Events {
     pub branch_protection_rule: OptionalBody<GenericEvent>,
@@ -157,7 +157,7 @@ impl Events {
 /// between the non-presence of an event (no trigger) and the presence
 /// of an empty event body (e.g. `pull_request:`), which means "trigger
 /// with the defaults for this event type."
-#[derive(Default, Serialize, Debug)]
+#[derive(Serialize, Debug, Default)]
 pub enum OptionalBody<T> {
     Default,
     #[default]

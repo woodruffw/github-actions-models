@@ -38,7 +38,7 @@ pub struct NormalJob {
     pub services: IndexMap<String, Container>,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "kebab-case", untagged, remote = "Self")]
 pub enum RunsOn {
     #[serde(deserialize_with = "crate::common::scalar_or_vector")]
