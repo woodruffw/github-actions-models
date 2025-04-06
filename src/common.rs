@@ -6,7 +6,7 @@ use std::{
 };
 
 use indexmap::IndexMap;
-use serde::{de, Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, de};
 
 pub mod expr;
 
@@ -31,7 +31,7 @@ impl Default for Permissions {
 
 /// "Base" permissions, where all individual permissions are configured
 /// with a blanket setting.
-#[derive(Deserialize, Default, Debug, PartialEq)]
+#[derive(Deserialize, Debug, Default, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum BasePermission {
     /// Whatever default permissions come from the workflow's `GITHUB_TOKEN`.
@@ -44,7 +44,7 @@ pub enum BasePermission {
 }
 
 /// A singular permission setting.
-#[derive(Deserialize, Default, Debug, PartialEq)]
+#[derive(Deserialize, Debug, Default, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum Permission {
     /// Read access.
@@ -64,7 +64,11 @@ pub type Env = IndexMap<String, EnvValue>;
 /// Environment variable values are always strings, but GitHub Actions
 /// allows users to configure them as various native YAML types before
 /// internal stringification.
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+///
+/// This type also gets used for other places where GitHub Actions
+/// contextually reinterprets a YAML value as a string, e.g. trigger
+/// input values.
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum EnvValue {
     // Missing values are empty strings.
@@ -88,7 +92,7 @@ impl Display for EnvValue {
 /// key can have either a scalar value or an array of values.
 ///
 /// This only appears internally, as an intermediate type for `scalar_or_vector`.
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 enum SoV<T> {
     One(T),
@@ -115,7 +119,7 @@ where
 /// A bool or string. This is useful for cases where GitHub Actions contextually
 /// reinterprets a YAML boolean as a string, e.g. `run: true` really means
 /// `run: 'true'`.
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 enum BoS {
     Bool(bool),
@@ -134,7 +138,7 @@ impl From<BoS> for String {
 /// An `if:` condition in a job or action definition.
 ///
 /// These are either booleans or bare (i.e. non-curly) expressions.
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum If {
     Bool(bool),
@@ -379,7 +383,7 @@ mod tests {
     use crate::common::{BasePermission, Env, EnvValue, Permission};
 
     use super::{
-        reusable_step_uses, DockerUses, LocalUses, Permissions, RepositoryUses, Uses, UsesError,
+        DockerUses, LocalUses, Permissions, RepositoryUses, Uses, UsesError, reusable_step_uses,
     };
 
     #[test]

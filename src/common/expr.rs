@@ -69,7 +69,7 @@ impl<'de> Deserialize<'de> for ExplicitExpr {
 /// A "literal or expr" type, for places in GitHub Actions where a
 /// key can either have a literal value (array, object, etc.) or an
 /// expression string.
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum LoE<T> {
     // Observe that `Expr` comes first, since `LoE<String>` should always

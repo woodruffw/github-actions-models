@@ -11,12 +11,12 @@ use indexmap::IndexMap;
 use serde::Deserialize;
 
 use crate::common::{
-    expr::{BoE, LoE},
     Env, If, Uses,
+    expr::{BoE, LoE},
 };
 
 /// A GitHub Actions action definition.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Action {
     /// The action's name.
@@ -33,7 +33,7 @@ pub struct Action {
 }
 
 /// An action input.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Input {
     // NOTE: documented as required, but experimentally it is not.
@@ -43,7 +43,7 @@ pub struct Input {
 }
 
 /// An action output.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Output {
     // NOTE: documented as required, but experimentally it is not.
@@ -56,7 +56,7 @@ pub struct Output {
 ///
 /// A `runs` definition can be either a JavaScript action, a "composite" action
 /// (made up of several constituent actions), or a Docker action.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum Runs {
     JavaScript(JavaScript),
@@ -65,7 +65,7 @@ pub enum Runs {
 }
 
 /// A `runs` definition for a JavaScript action.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct JavaScript {
     /// The Node runtime to use for this action. This is one of:
@@ -94,7 +94,7 @@ pub struct JavaScript {
 }
 
 /// A `runs` definition for a composite action.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Composite {
     /// Invariant: `"composite"`
@@ -106,7 +106,7 @@ pub struct Composite {
 /// An individual composite action step.
 ///
 /// This is similar, but not identical to [`crate::workflow::job::Step`].
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Step {
     /// An optional ID for this composite step.
@@ -129,7 +129,7 @@ pub struct Step {
 }
 
 /// The body of a composite action step.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum StepBody {
     /// A step that uses another GitHub Action.
@@ -160,7 +160,7 @@ pub enum StepBody {
 }
 
 /// A `runs` definition for a Docker action.
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct Docker {
     /// Invariant: `"docker"`
