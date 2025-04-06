@@ -265,6 +265,7 @@ pub struct WorkflowCallOutput {
 #[serde(rename_all = "kebab-case")]
 pub struct WorkflowCallSecret {
     pub description: Option<String>,
+    #[serde(default)]
     pub required: bool,
 }
 
