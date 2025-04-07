@@ -198,7 +198,7 @@ pub struct GenericEvent {
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct PullRequest {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::common::scalar_or_vector")]
     pub types: Vec<String>,
 
     #[serde(flatten)]
