@@ -203,36 +203,13 @@ impl FromStr for Uses {
 #[derive(Debug, PartialEq)]
 pub struct LocalUses {
     pub path: String,
-    pub git_ref: Option<String>,
 }
 
 impl FromStr for LocalUses {
     type Err = UsesError;
 
     fn from_str(uses: &str) -> Result<Self, Self::Err> {
-        let (path, git_ref) = match uses.rsplit_once('@') {
-            Some((path, git_ref)) => (path, Some(git_ref)),
-            None => (uses, None),
-        };
-
-        if path.is_empty() {
-            return Err(UsesError(format!(
-                "local uses has no path component: {uses}"
-            )));
-        }
-
-        // TODO: Overly conservative? `uses: ./foo/bar@` might be valid if
-        // `./foo/bar@/action.yml` exists.
-        if git_ref.is_some_and(|git_ref| git_ref.is_empty()) {
-            return Err(UsesError(format!(
-                "local uses is missing git ref after '@': {uses}"
-            )));
-        }
-
-        Ok(LocalUses {
-            path: path.into(),
-            git_ref: git_ref.map(Into::into),
-        })
+        Ok(LocalUses { path: uses.into() })
     }
 }
 
@@ -259,9 +236,8 @@ impl FromStr for RepositoryUses {
         // In theory we could do `From<String>` instead, but
         // `&mut str::split_mut` and similar don't exist yet.
 
-        // NOTE: Technically both git refs and action paths can contain `@`,
-        // so this isn't guaranteed to be correct. In practice, however,
-        // splitting on the last `@` is mostly reliable.
+        // NOTE: Both git refs and paths can contain `@`, but in practice
+        // GHA refuses to run a `uses:` clause with more than one `@` in it.
         let (path, git_ref) = match uses.rsplit_once('@') {
             Some((path, git_ref)) => (path, Some(git_ref)),
             None => (uses, None),
@@ -362,12 +338,29 @@ where
     let uses = step_uses(de)?;
 
     match uses {
-        Uses::Repository(repo) if repo.git_ref.is_none() => Err(de::Error::custom(
-            "repo action must have `@<ref> in reusable workflow",
-        )),
-        // NOTE: local reusable workflows do not have to be pinned.
-        Uses::Local(_) => Ok(uses),
-        Uses::Repository(_) => Ok(uses),
+        Uses::Repository(ref repo) => {
+            // Remote reusable workflows must be pinned.
+            if repo.git_ref.is_none() {
+                Err(de::Error::custom(
+                    "repo action must have `@<ref>` in reusable workflow",
+                ))
+            } else {
+                Ok(uses)
+            }
+        }
+        Uses::Local(ref local) => {
+            // Local reusable workflows cannot be pinned.
+            // We do this with a string scan because `@` *can* occur as
+            // a path component in local actions uses, just not local reusable
+            // workflow uses.
+            if local.path.contains('@') {
+                Err(de::Error::custom(
+                    "local reusable workflow reference can't specify `@<ref>`",
+                ))
+            } else {
+                Ok(uses)
+            }
+        }
         // `docker://` is never valid in reusable workflow uses.
         Uses::Docker(_) => Err(de::Error::custom(
             "docker action invalid in reusable workflow `uses`",
@@ -555,11 +548,10 @@ mod tests {
                 })),
             ),
             (
-                // Valid: Local action ref
+                // Valid: Local action "ref", actually part of the path
                 "./.github/actions/hello-world-action@172239021f7ba04fe7327647b213799853a9eb89",
                 Ok(Uses::Local(LocalUses {
-                    path: "./.github/actions/hello-world-action".to_owned(),
-                    git_ref: Some("172239021f7ba04fe7327647b213799853a9eb89".to_owned()),
+                    path: "./.github/actions/hello-world-action@172239021f7ba04fe7327647b213799853a9eb89".to_owned(),
                 })),
             ),
             (
@@ -567,7 +559,6 @@ mod tests {
                 "./.github/actions/hello-world-action",
                 Ok(Uses::Local(LocalUses {
                     path: "./.github/actions/hello-world-action".to_owned(),
-                    git_ref: None,
                 })),
             ),
             // Invalid: missing user/repo
@@ -616,13 +607,12 @@ mod tests {
                     git_ref: Some("abcd".to_owned()),
                 })),
             ),
-            // Valid: local reusable workflow
+            // Invalid: remote reusable workflow without ref
+            ("octo-org/this-repo/.github/workflows/workflow-1.yml", None),
+            // Invalid: local reusable workflow with ref
             (
                 "./.github/workflows/workflow-1.yml@172239021f7ba04fe7327647b213799853a9eb89",
-                Some(Uses::Local(LocalUses {
-                    path: "./.github/workflows/workflow-1.yml".to_owned(),
-                    git_ref: Some("172239021f7ba04fe7327647b213799853a9eb89".to_owned()),
-                })),
+                None,
             ),
             // Invalid: no ref at all
             ("octo-org/this-repo/.github/workflows/workflow-1.yml", None),
