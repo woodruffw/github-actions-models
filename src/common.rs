@@ -236,9 +236,8 @@ impl FromStr for RepositoryUses {
         // In theory we could do `From<String>` instead, but
         // `&mut str::split_mut` and similar don't exist yet.
 
-        // NOTE: Technically both git refs and action paths can contain `@`,
-        // so this isn't guaranteed to be correct. In practice, however,
-        // splitting on the last `@` is mostly reliable.
+        // NOTE: Both git refs and paths can contain `@`, but in practice
+        // GHA refuses to run a `uses:` clause with more than one `@` in it.
         let (path, git_ref) = match uses.rsplit_once('@') {
             Some((path, git_ref)) => (path, Some(git_ref)),
             None => (uses, None),
