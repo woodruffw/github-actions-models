@@ -2,10 +2,10 @@
 name = "github-actions-models"
 authors = ["William Woodruff <william@yossarian.net>"]
 description = "Unofficial, high-quality data models for GitHub Actions workflows, actions, and related components"
-version = "0.28.1"
+version = "0.28.2"
 edition = "2024"
 license = "MIT"
-repository = "https://github.com/woodruffw/github-actions-models"
+repository = "https://github.com/zizmorcore/github-actions-models"
 keywords = ["github", "ci"]
 categories = ["api-bindings"]
 

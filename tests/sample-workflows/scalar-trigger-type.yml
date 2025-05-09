@@ -1,4 +1,4 @@
-# repro case for https://github.com/woodruffw/github-actions-models/issues/12
+# repro case for https://github.com/zizmorcore/github-actions-models/issues/12
 name: issue-12
 on:
   repository_dispatch:
