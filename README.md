@@ -4,6 +4,15 @@ github-actions-models
 [![CI](https://github.com/zizmorcore/github-actions-models/actions/workflows/ci.yml/badge.svg)](https://github.com/zizmorcore/github-actions-models/actions/workflows/ci.yml)
 [![Crates.io](https://img.shields.io/crates/v/github-actions-models)](https://crates.io/crates/github-actions-models)
 
+> [!IMPORTANT]
+>
+> This library has been migrated to [zizmorcore/zizmor].
+>
+> Follow the `crates/github-actions-models` subdirectory of that repository
+> for ongoing development.
+
+[zizmorcore/zizmor]: https://github.com/zizmorcore/zizmor
+
 Unofficial, high-quality data models for GitHub Actions workflows, actions, and related components.
 
 ## Why?
